@@ -48,6 +48,12 @@ class RoleSeeder extends Seeder
         Permission::create(['name' => 'view_produksi']);
         Permission::create(['name' => 'download_desain']);
 
+        // Cashflow Permissions
+        Permission::create(['name' => 'view_cashflow']);
+        Permission::create(['name' => 'create_cashflow']);
+        Permission::create(['name' => 'edit_cashflow']);
+        Permission::create(['name' => 'delete_cashflow']);
+
         // Create Roles and Assign Permissions
 
         // 1. Owner / Admin - Full Access

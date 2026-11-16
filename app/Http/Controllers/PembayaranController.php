@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Pesanan;
+use App\Models\CashFlow;
 use App\Models\Pembayaran;
+use App\Models\Pesanan;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class PembayaranController extends Controller implements HasMiddleware
 {
@@ -58,26 +60,40 @@ class PembayaranController extends Controller implements HasMiddleware
 
         $pesanan = Pesanan::findOrFail($request->pesanan_id);
 
-        // Create pembayaran
-        $pembayaran = new Pembayaran();
-        $pembayaran->pesanan_id = $pesanan->id;
-        $pembayaran->user_id = Auth::id();
-        $pembayaran->jumlah = $request->jumlah;
-        $pembayaran->tipe = $request->tipe;
-        $pembayaran->metode_pembayaran = $request->metode_pembayaran;
-        $pembayaran->catatan = $request->catatan;
-        $pembayaran->save();
+        DB::transaction(function () use ($request, $pesanan) {
+            $pembayaran = new Pembayaran();
+            $pembayaran->pesanan_id = $pesanan->id;
+            $pembayaran->user_id = Auth::id();
+            $pembayaran->jumlah = $request->jumlah;
+            $pembayaran->tipe = $request->tipe;
+            $pembayaran->metode_pembayaran = $request->metode_pembayaran;
+            $pembayaran->catatan = $request->catatan;
+            $pembayaran->save();
 
-        // Update pesanan payment info
-        $pesanan->total_dp += $request->jumlah;
-        $pesanan->sisa_bayar = $pesanan->total_harga - $pesanan->total_dp;
-        
-        if ($pesanan->sisa_bayar <= 0) {
-            $pesanan->status_pembayaran = 'lunas';
-            $pesanan->sisa_bayar = 0;
-        }
-        
-        $pesanan->save();
+            $pesanan->total_dp += $request->jumlah;
+            $pesanan->sisa_bayar = $pesanan->total_harga - $pesanan->total_dp;
+
+            if ($pesanan->sisa_bayar <= 0) {
+                $pesanan->status_pembayaran = 'lunas';
+                $pesanan->sisa_bayar = 0;
+            }
+
+            $pesanan->save();
+
+            $kategori = $pembayaran->tipe === 'dp' ? 'Pembayaran DP' : 'Pelunasan Pesanan';
+            $keterangan = trim('Sinkron dari pembayaran #' . $pembayaran->id . ' (' . ($pesanan->nomor_nota ?? '-') . ')' . ($pembayaran->catatan ? ' - ' . $pembayaran->catatan : ''));
+
+            CashFlow::create([
+                'tanggal' => $pembayaran->created_at?->toDateString() ?? now()->toDateString(),
+                'tipe' => 'masuk',
+                'kategori' => $kategori,
+                'jumlah' => $pembayaran->jumlah,
+                'metode_pembayaran' => $pembayaran->metode_pembayaran,
+                'keterangan' => $keterangan,
+                'pembayaran_id' => $pembayaran->id,
+                'user_id' => $pembayaran->user_id,
+            ]);
+        });
 
         return redirect()->route('pesanan.show', $pesanan)
             ->with('success', 'Pembayaran berhasil dicatat!');

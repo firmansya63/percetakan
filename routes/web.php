@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BahanController;
+use App\Http\Controllers\CashFlowController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FinishingController;
 use App\Http\Controllers\LaporanController;
@@ -58,6 +59,10 @@ Route::middleware('auth')->group(function () {
     Route::get('laporan/omzet', [LaporanController::class, 'omzet'])->name('laporan.omzet');
     Route::get('laporan/keuangan', [LaporanController::class, 'keuangan'])->name('laporan.keuangan');
     Route::get('laporan/pesanan', [LaporanController::class, 'pesanan'])->name('laporan.pesanan');
+
+    // Cashflow / Keuangan
+    Route::resource('cashflow', CashFlowController::class);
+
     // User Management
     Route::resource('user', UserController::class)->except(['show']);
 

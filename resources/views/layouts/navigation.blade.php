@@ -98,6 +98,15 @@
                 </a>
             </div>
             @endcan
+
+            @can('view_cashflow')
+            <div class="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
+                <p class="px-3 mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Keuangan</p>
+                <a href="{{ route('cashflow.index') }}" @click="sidebarOpen = false" class="{{ $linkBase }} {{ request()->routeIs('cashflow.*') ? $linkActive : $linkInactive }}">
+                    <span>Cashflow</span>
+                </a>
+            </div>
+            @endcan
         </nav>
 
         <!-- User -->
