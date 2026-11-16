@@ -22,16 +22,16 @@
             @endif
 
             <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-                <form method="GET" action="{{ route('cashflow.index') }}" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
-                    <div>
+                <form method="GET" action="{{ route('cashflow.index') }}" class="flex flex-wrap items-end gap-4">
+                    <div class="min-w-[160px] flex-1">
                         <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Dari Tanggal</label>
                         <input type="date" name="start_date" value="{{ $startDate }}" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-md shadow-sm">
                     </div>
-                    <div>
+                    <div class="min-w-[160px] flex-1">
                         <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Sampai Tanggal</label>
                         <input type="date" name="end_date" value="{{ $endDate }}" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-md shadow-sm">
                     </div>
-                    <div>
+                    <div class="min-w-[150px] flex-1">
                         <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Tipe</label>
                         <select name="tipe" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-md shadow-sm">
                             <option value="">Semua</option>
@@ -39,7 +39,7 @@
                             <option value="keluar" @selected($tipe === 'keluar')>Keluar</option>
                         </select>
                     </div>
-                    <div>
+                    <div class="min-w-[180px] flex-1">
                         <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Kategori</label>
                         <select name="kategori" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded-md shadow-sm">
                             <option value="">Semua</option>
@@ -48,8 +48,8 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="flex gap-2">
-                        <button type="submit" class="flex-1 px-4 py-2 bg-gray-800 hover:bg-gray-900 text-white font-semibold rounded-md text-sm">Filter</button>
+                    <div class="flex items-center gap-2">
+                        <button type="submit" class="px-4 py-2 bg-gray-800 hover:bg-gray-900 text-white font-semibold rounded-md text-sm">Filter</button>
                         <a href="{{ route('cashflow.index') }}" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-md text-sm font-medium">Reset</a>
                     </div>
                 </form>
