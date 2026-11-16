@@ -7,7 +7,7 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-{{ $canViewOmzet ? '4' : '3' }} gap-6 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-{{ $canViewOmzet ?? false ? '4' : '3' }} gap-6 mb-6">
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
                     <h3 class="text-sm font-semibold text-gray-600 dark:text-gray-400">Total Pesanan</h3>
                     <p class="text-3xl font-bold text-blue-600">{{ $totalPesanan }}</p>
@@ -42,7 +42,7 @@
                                         <a href="{{ route('pesanan.show', $pesanan) }}" class="font-semibold text-blue-600 hover:underline">
                                             {{ $pesanan->nomor_nota }}
                                         </a>
-                                        <p class="text-xs text-gray-500">{{ $pesanan->pelanggan->nama_pelanggan ?? 'Umum / Walk-in' }} &bull; {{ $pesanan->tanggal_pesanan->format('d/m/Y') }}</p>
+                                        <p class="text-xs text-gray-500">{{ $pesanan->pelanggan?->nama_pelanggan ?? 'Umum / Walk-in' }} &bull; {{ $pesanan->tanggal_pesanan?->format('d/m/Y') ?? 'Tanggal tidak diketahui' }}</p>
                                     </div>
                                     <div class="text-right">
                                         <span class="px-2 py-1 text-xs rounded font-semibold bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
