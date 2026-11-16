@@ -5,8 +5,8 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    <div class="py-6 sm:py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
             <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
                 <form method="GET" action="{{ route('laporan.pesanan') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                     <div>

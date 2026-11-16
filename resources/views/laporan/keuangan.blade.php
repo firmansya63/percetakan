@@ -5,8 +5,8 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    <div class="py-6 sm:py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
             <!-- Filter Tanggal -->
             <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
                 <form method="GET" action="{{ route('laporan.keuangan') }}" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
@@ -27,7 +27,7 @@
             </div>
 
             <!-- Summary Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border-l-4 border-green-500">
                     <span class="text-xs text-gray-500 uppercase font-semibold">Total Uang Masuk</span>
                     <h4 class="text-2xl font-bold text-green-600 mt-1">Rp {{ number_format($totalPembayaran, 0, ',', '.') }}</h4>

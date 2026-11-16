@@ -5,10 +5,10 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
+    <div class="py-6 sm:py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
+                <div class="p-4 sm:p-6">
                     <a href="{{ route('pesanan.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 mb-4">
                         Buat Pesanan Baru
                     </a>
@@ -19,6 +19,7 @@
                     </div>
                     @endif
 
+                    <div class="overflow-x-auto -mx-4 sm:mx-0">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
@@ -49,8 +50,9 @@
                             @endforeach
                         </tbody>
                     </table>
+                    </div>
                     
-                    {{ $pesanans->links() }}
+                    <div class="mt-4">{{ $pesanans->links() }}</div>
                 </div>
             </div>
         </div>

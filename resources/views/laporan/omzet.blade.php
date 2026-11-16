@@ -5,8 +5,8 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    <div class="py-6 sm:py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
             <!-- Filter Tanggal -->
             <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
                 <form method="GET" action="{{ route('laporan.omzet') }}" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
@@ -41,7 +41,7 @@
 
             <!-- Tabel Data Pesanan Lunas -->
             <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-                <div class="flex justify-between items-center mb-4">
+                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
                     <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100">Daftar Transaksi Lunas</h3>
                     <button onclick="window.print()" class="px-3 py-1.5 bg-gray-200 dark:bg-gray-700 text-xs font-semibold rounded">Cetak Laporan</button>
                 </div>
