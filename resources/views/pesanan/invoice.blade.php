@@ -12,6 +12,8 @@
                     <button onclick="window.print()" class="px-4 py-2 bg-blue-600 text-white rounded mb-4">Cetak</button>
                     
                     <div class="border p-6">
+                        <x-company-header class="mb-4 pb-4 border-b" />
+
                         <h1 class="text-3xl font-bold text-center mb-2">INVOICE</h1>
                         <p class="text-center mb-6">{{ $pesanan->nomor_nota }}</p>
 

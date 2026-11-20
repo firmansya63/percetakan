@@ -22,7 +22,7 @@
         <div class="flex items-center justify-between h-16 px-4 border-b border-gray-200 dark:border-gray-700">
             <a href="{{ route('dashboard') }}" class="flex items-center gap-2 min-w-0">
                 <x-application-logo class="block h-8 w-auto shrink-0 fill-current text-gray-800 dark:text-gray-200" />
-                <span class="font-semibold text-gray-800 dark:text-gray-200 truncate">{{ config('app.name', 'Percetakan') }}</span>
+                <span class="font-semibold text-gray-800 dark:text-gray-200 truncate">{{ $companyProfile->name ?? config('app.name', 'Percetakan') }}</span>
             </a>
             <button @click="sidebarOpen = false" class="p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700" aria-label="Tutup menu">
                 <svg class="h-5 w-5" stroke="currentColor" fill="none" viewBox="0 0 24 24">
@@ -85,6 +85,10 @@
 
             @role('owner')
             <div class="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
+                <p class="px-3 mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Pengaturan</p>
+                <a href="{{ route('company.edit') }}" @click="sidebarOpen = false" class="{{ $linkBase }} {{ request()->routeIs('company.*') ? $linkActive : $linkInactive }}">
+                    <span>Profil Perusahaan</span>
+                </a>
                 <a href="{{ route('user.index') }}" @click="sidebarOpen = false" class="{{ $linkBase }} {{ request()->routeIs('user.*') ? $linkActive : $linkInactive }}">
                     <span>User</span>
                 </a>

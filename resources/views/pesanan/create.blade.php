@@ -17,6 +17,12 @@
                 </div>
             @endif
 
+            @if(session('error'))
+                <div class="mb-6 p-4 bg-red-100 text-red-700 rounded-lg">
+                    {{ session('error') }}
+                </div>
+            @endif
+
             <form action="{{ route('pesanan.store') }}" method="POST" id="orderForm" class="space-y-6">
                 @csrf
 
@@ -29,26 +35,26 @@
                             <select name="pelanggan_id" id="pelangganSelect" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-md">
                                 <option value="">-- Pelanggan Baru / Walk-in --</option>
                                 @foreach($pelanggans as $p)
-                                    <option value="{{ $p->id }}">{{ $p->nama_pelanggan }} ({{ $p->telepon ?? 'No Telp' }})</option>
+                                    <option value="{{ $p->id }}" {{ old('pelanggan_id') == $p->id ? 'selected' : '' }}>{{ $p->nama_pelanggan }} ({{ $p->telepon ?? 'No Telp' }})</option>
                                 @endforeach
                             </select>
                         </div>
                         <div id="newCustomerBlock">
                             <label class="block text-xs font-semibold mb-1 text-gray-700 dark:text-gray-300">Nama Pelanggan Baru:</label>
-                            <input type="text" name="nama_pelanggan_baru" placeholder="Nama Pelanggan / Perusahaan" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-md">
+                            <input type="text" name="nama_pelanggan_baru" value="{{ old('nama_pelanggan_baru') }}" placeholder="Nama Pelanggan / Perusahaan" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-md">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold mb-1 text-gray-700 dark:text-gray-300">No. WhatsApp / Telepon:</label>
-                            <input type="text" name="telepon_pelanggan_baru" placeholder="08xxxxxxxxxx" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-md">
+                            <input type="text" name="telepon_pelanggan_baru" value="{{ old('telepon_pelanggan_baru') }}" placeholder="08xxxxxxxxxx" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-md">
                         </div>
                         <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <label class="block text-xs font-semibold mb-1 text-gray-700 dark:text-gray-300">Tanggal Pesanan *:</label>
-                                <input type="date" name="tanggal_pesanan" value="{{ date('Y-m-d') }}" required class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-md">
+                                <input type="date" name="tanggal_pesanan" value="{{ old('tanggal_pesanan', date('Y-m-d')) }}" required class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-md">
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold mb-1 text-gray-700 dark:text-gray-300">Estimasi Ambil:</label>
-                                <input type="date" name="tanggal_ambil" value="{{ date('Y-m-d', strtotime('+1 day')) }}" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-md">
+                                <input type="date" name="tanggal_ambil" value="{{ old('tanggal_ambil', date('Y-m-d', strtotime('+1 day'))) }}" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-md">
                             </div>
                         </div>
                     </div>
@@ -76,20 +82,20 @@
                         <div class="space-y-4">
                             <div>
                                 <label class="block text-xs font-semibold mb-1">Uang Muka / DP (Rp):</label>
-                                <input type="number" name="dp" id="inputDP" value="0" min="0" step="any" class="w-full text-sm border-gray-300 rounded-md">
+                                <input type="number" name="dp" id="inputDP" value="{{ old('dp', 0) }}" min="0" step="any" class="w-full text-sm border-gray-300 rounded-md">
                                 <span class="text-xs text-gray-500">Kosongkan jika belum bayar, isi penuh untuk bayar lunas langsung.</span>
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold mb-1">Metode Pembayaran:</label>
                                 <select name="metode_pembayaran" class="w-full text-sm border-gray-300 rounded-md">
-                                    <option value="tunai">Tunai / Cash</option>
-                                    <option value="transfer">Transfer Bank</option>
-                                    <option value="qris">QRIS</option>
+                                    <option value="tunai" {{ old('metode_pembayaran', 'tunai') == 'tunai' ? 'selected' : '' }}>Tunai / Cash</option>
+                                    <option value="transfer" {{ old('metode_pembayaran') == 'transfer' ? 'selected' : '' }}>Transfer Bank</option>
+                                    <option value="qris" {{ old('metode_pembayaran') == 'qris' ? 'selected' : '' }}>QRIS</option>
                                 </select>
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold mb-1">Catatan Tambahan untuk Produksi:</label>
-                                <textarea name="catatan" rows="2" placeholder="Contoh: Warna cerah, potong pas garis..." class="w-full text-sm border-gray-300 rounded-md"></textarea>
+                                <textarea name="catatan" rows="2" placeholder="Contoh: Warna cerah, potong pas garis..." class="w-full text-sm border-gray-300 rounded-md">{{ old('catatan') }}</textarea>
                             </div>
                         </div>
 

@@ -5,14 +5,26 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>{{ $companyProfile->name ?? config('app.name', 'Laravel') }}</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: {
+                            sans: ['Figtree', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                        },
+                    },
+                },
+            };
+        </script>
+        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
         <style>[x-cloak]{display:none !important;}</style>
     </head>
     <body class="font-sans antialiased">
@@ -36,7 +48,7 @@
                     </button>
                     <a href="{{ route('dashboard') }}" class="ml-3 flex items-center gap-2 min-w-0">
                         <x-application-logo class="block h-8 w-auto shrink-0 fill-current text-gray-800 dark:text-gray-200" />
-                        <span class="font-semibold text-gray-800 dark:text-gray-200 truncate">{{ config('app.name', 'Percetakan') }}</span>
+                        <span class="font-semibold text-gray-800 dark:text-gray-200 truncate">{{ $companyProfile->name ?? config('app.name', 'Percetakan') }}</span>
                     </a>
                 </div>
             </div>

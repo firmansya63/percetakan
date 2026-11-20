@@ -116,6 +116,19 @@ class PesananController extends Controller implements HasMiddleware
             foreach ($request->items as $itemData) {
                 $bahan = Bahan::find($itemData['bahan_id']);
 
+                // Hitung konsumsi stok bahan
+                $stokDigunakan = $itemData['qty'];
+                if ($bahan->jenis_cetakan === 'banner' && ! empty($itemData['panjang']) && ! empty($itemData['lebar'])) {
+                    $stokDigunakan = $itemData['panjang'] * $itemData['lebar'] * $itemData['qty'];
+                }
+
+                // Validasi stok mencukupi
+                if ($bahan->stok < $stokDigunakan) {
+                    throw new \RuntimeException(
+                        "Stok bahan \"{$bahan->nama_bahan}\" tidak mencukupi. Tersedia {$bahan->stok} {$bahan->satuan}, dibutuhkan {$stokDigunakan} {$bahan->satuan}."
+                    );
+                }
+
                 $detailPesanan = new DetailPesanan;
                 $detailPesanan->pesanan_id = $pesanan->id;
                 $detailPesanan->bahan_id = $itemData['bahan_id'];
@@ -158,6 +171,9 @@ class PesananController extends Controller implements HasMiddleware
                 $detailPesanan->total_finishing = $totalFinishing;
                 $detailPesanan->subtotal = $detailPesanan->subtotal_bahan + $totalFinishing;
                 $detailPesanan->save();
+
+                // Kurangi stok bahan sesuai konsumsi
+                $bahan->decrement('stok', $stokDigunakan);
 
                 $totalSemuaItem += $detailPesanan->subtotal;
             }
@@ -226,7 +242,27 @@ class PesananController extends Controller implements HasMiddleware
 
     public function destroy(Pesanan $pesanan)
     {
-        $pesanan->delete();
+        $pesanan->load('detailPesanans.bahan');
+
+        DB::beginTransaction();
+        try {
+            foreach ($pesanan->detailPesanans as $detail) {
+                if ($detail->bahan) {
+                    $stokDigunakan = $detail->qty;
+                    if ($detail->bahan->jenis_cetakan === 'banner' && $detail->panjang && $detail->lebar) {
+                        $stokDigunakan = $detail->panjang * $detail->lebar * $detail->qty;
+                    }
+                    $detail->bahan->increment('stok', $stokDigunakan);
+                }
+            }
+
+            $pesanan->delete();
+
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            throw $e;
+        }
 
         return redirect()->route('pesanan.index')->with('success', 'Pesanan berhasil dihapus!');
     }

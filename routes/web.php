@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BahanController;
 use App\Http\Controllers\CashFlowController;
+use App\Http\Controllers\CompanyProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FinishingController;
 use App\Http\Controllers\LaporanController;
@@ -27,6 +28,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    // Perusahaan (Owner Only)
+    Route::middleware('role:owner')->group(function () {
+        Route::get('/company', [CompanyProfileController::class, 'edit'])->name('company.edit');
+        Route::patch('/company', [CompanyProfileController::class, 'update'])->name('company.update');
+    });
+
     // Master Data (Admin Only)
     Route::resource('bahan', BahanController::class);
     Route::resource('finishing', FinishingController::class);
@@ -41,7 +48,6 @@ Route::middleware('auth')->group(function () {
     Route::put('pesanan/{pesanan}/status', [PesananController::class, 'updateStatus'])->name('pesanan.update-status');
     Route::post('detail-pesanan/{detailPesanan}/upload', [PesananController::class, 'uploadDesain'])->name('detail-pesanan.upload');
     Route::get('pesanan/{pesanan}/invoice', [PesananController::class, 'invoice'])->name('pesanan.invoice');
-    Route::post('calculate-price', [PesananController::class, 'calculatePrice'])->name('pesanan.calculate-price');
 
     // Pembayaran
     Route::resource('pembayaran', PembayaranController::class)->except(['create']);

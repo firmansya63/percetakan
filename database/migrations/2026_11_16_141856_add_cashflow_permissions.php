@@ -25,8 +25,11 @@ return new class extends Migration
             Permission::findOrCreate($permission);
         }
 
-        $owner = Role::findByName('owner');
-        $owner->givePermissionTo($permissions);
+        $owner = Role::where('name', 'owner')->where('guard_name', 'web')->first();
+
+        if ($owner) {
+            $owner->givePermissionTo($permissions);
+        }
 
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
     }
@@ -45,7 +48,8 @@ return new class extends Migration
             'delete_cashflow',
         ];
 
-        $owner = Role::findByName('owner');
+        $owner = Role::where('name', 'owner')->where('guard_name', 'web')->first();
+
         if ($owner) {
             $owner->revokePermissionTo($permissions);
         }

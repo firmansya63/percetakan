@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\CompanyProfile;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +21,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        View::composer('*', function ($view) {
+            static $companyProfile = false;
+
+            if ($companyProfile === false) {
+                $companyProfile = CompanyProfile::query()->oldest('id')->first();
+            }
+
+            $view->with('companyProfile', $companyProfile);
+        });
     }
 }
