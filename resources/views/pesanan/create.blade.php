@@ -73,17 +73,37 @@
                         <!-- Item row template injected here by JS -->
                     </div>
 
-                    <!-- Jasa Design (opsional) -->
+                    <!-- Jasa Tambahan (opsional, bisa lebih dari satu) -->
                     <div class="mt-6 p-4 bg-yellow-50 dark:bg-gray-700 rounded-lg border border-yellow-200 dark:border-gray-600">
-                        <label class="inline-flex items-center cursor-pointer">
-                            <input type="checkbox" id="jasaDesignCheck" name="jasa_design_enabled" class="rounded border-gray-300 text-yellow-600" {{ old('jasa_design_enabled') ? 'checked' : '' }}>
-                            <span class="ml-2 text-sm font-semibold text-gray-800 dark:text-gray-200">Termasuk Jasa Design</span>
-                        </label>
-                        <div id="jasaDesignPriceBlock" class="mt-3 {{ old('jasa_design_enabled') ? '' : 'hidden' }}">
-                            <label class="block text-xs font-semibold mb-1 text-gray-700 dark:text-gray-300">Harga Jasa Design (Rp):</label>
-                            <input type="number" name="jasa_design" id="inputJasaDesign" value="{{ old('jasa_design', 0) }}" min="0" step="any" placeholder="0" class="w-full sm:w-64 text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-md">
-                            <p class="text-xs text-gray-500 mt-1">Harga diinput manual, akan muncul sebagai item terpisah di invoice & nota.</p>
+                        <h4 class="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-3">Jasa Tambahan (opsional):</h4>
+
+                        <div class="space-y-3">
+                            <div class="flex flex-wrap items-center gap-3">
+                                <label class="inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="jasaDesignCheck" name="jasa_design_enabled" class="jasa-check rounded border-gray-300 text-yellow-600" {{ old('jasa_design_enabled') ? 'checked' : '' }}>
+                                    <span class="ml-2 text-sm font-semibold text-gray-800 dark:text-gray-200">Jasa Design</span>
+                                </label>
+                                <input type="number" name="jasa_design" id="inputJasaDesign" value="{{ old('jasa_design', 0) }}" min="0" step="any" placeholder="0" class="jasa-price w-full sm:w-48 text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-md">
+                            </div>
+
+                            <div class="flex flex-wrap items-center gap-3">
+                                <label class="inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="jasaFinishingCheck" name="jasa_finishing_enabled" class="jasa-check rounded border-gray-300 text-yellow-600" {{ old('jasa_finishing_enabled') ? 'checked' : '' }}>
+                                    <span class="ml-2 text-sm font-semibold text-gray-800 dark:text-gray-200">Jasa Finishing</span>
+                                </label>
+                                <input type="number" name="jasa_finishing" id="inputJasaFinishing" value="{{ old('jasa_finishing', 0) }}" min="0" step="any" placeholder="0" class="jasa-price w-full sm:w-48 text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-md">
+                            </div>
+
+                            <div class="flex flex-wrap items-center gap-3">
+                                <label class="inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="jasaPotongCheck" name="jasa_potong_enabled" class="jasa-check rounded border-gray-300 text-yellow-600" {{ old('jasa_potong_enabled') ? 'checked' : '' }}>
+                                    <span class="ml-2 text-sm font-semibold text-gray-800 dark:text-gray-200">Jasa Potong</span>
+                                </label>
+                                <input type="number" name="jasa_potong" id="inputJasaPotong" value="{{ old('jasa_potong', 0) }}" min="0" step="any" placeholder="0" class="jasa-price w-full sm:w-48 text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-md">
+                            </div>
                         </div>
+
+                        <p class="text-xs text-gray-500 mt-3">Harga diinput manual per jasa, akan muncul sebagai item terpisah di invoice & nota.</p>
                     </div>
                 </div>
 
@@ -284,12 +304,15 @@
                 grandTotal += calculateItem(card);
             });
 
-            // Tambahkan jasa design jika dicentang
-            const jasaCheck = document.getElementById('jasaDesignCheck');
-            const jasaPrice = document.getElementById('inputJasaDesign');
-            if (jasaCheck && jasaCheck.checked && jasaPrice) {
-                grandTotal += parseFloat(jasaPrice.value) || 0;
-            }
+            // Tambahkan jasa tambahan (bisa lebih dari satu) jika dicentang
+            document.querySelectorAll('.jasa-check').forEach(chk => {
+                if (chk.checked) {
+                    const priceInput = chk.closest('.flex').querySelector('.jasa-price');
+                    if (priceInput) {
+                        grandTotal += parseFloat(priceInput.value) || 0;
+                    }
+                }
+            });
 
             document.getElementById('totalTagihanDisplay').innerText = formatRupiah(grandTotal);
 
@@ -353,19 +376,13 @@
         document.getElementById('addItemBtn').addEventListener('click', addNewItem);
         document.getElementById('inputDP').addEventListener('input', calculateGrandTotal);
 
-        // Toggle jasa design price block
-        const jasaCheck = document.getElementById('jasaDesignCheck');
-        const jasaPriceBlock = document.getElementById('jasaDesignPriceBlock');
-        const jasaPrice = document.getElementById('inputJasaDesign');
-        if (jasaCheck) {
-            jasaCheck.addEventListener('change', () => {
-                jasaPriceBlock.classList.toggle('hidden', !jasaCheck.checked);
-                calculateGrandTotal();
-            });
-        }
-        if (jasaPrice) {
-            jasaPrice.addEventListener('input', calculateGrandTotal);
-        }
+        // Jasa tambahan: hitung ulang saat checkbox/harga berubah
+        document.querySelectorAll('.jasa-check').forEach(chk => {
+            chk.addEventListener('change', calculateGrandTotal);
+        });
+        document.querySelectorAll('.jasa-price').forEach(inp => {
+            inp.addEventListener('input', calculateGrandTotal);
+        });
 
         // Add first item on load
         addNewItem();

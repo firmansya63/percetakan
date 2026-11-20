@@ -37,7 +37,7 @@
                                 <div class="text-xs text-gray-600 dark:text-gray-300 space-y-1 mb-3 bg-gray-50 dark:bg-gray-800 p-2 rounded">
                                     @foreach($pesanan->detailPesanans as $item)
                                         <div>
-                                            • <strong>{{ $item->nama_item }}</strong> ({{ $item->bahan->nama_bahan ?? 'Jasa Design' }})
+                                            • <strong>{{ $item->nama_item }}</strong> ({{ $item->bahan->nama_bahan ?? 'Jasa' }})
                                             @if($item->panjang && $item->lebar)
                                                 - Ukuran: {{ $item->panjang }}m x {{ $item->lebar }}m
                                             @endif
@@ -89,7 +89,7 @@
                                 <div class="text-xs text-gray-600 dark:text-gray-300 space-y-1 mb-3 bg-gray-50 dark:bg-gray-800 p-2 rounded">
                                     @foreach($pesanan->detailPesanans as $item)
                                         <div>
-                                            • <strong>{{ $item->nama_item }}</strong> ({{ $item->bahan->nama_bahan ?? 'Jasa Design' }})
+                                            • <strong>{{ $item->nama_item }}</strong> ({{ $item->bahan->nama_bahan ?? 'Jasa' }})
                                             @if($item->panjang && $item->lebar)
                                                 - Ukuran: {{ $item->panjang }}m x {{ $item->lebar }}m
                                             @endif
@@ -144,7 +144,7 @@
                                 <p class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Pelanggan: {{ $pesanan->pelanggan->nama_pelanggan ?? 'Umum' }}</p>
                                 <div class="text-xs text-gray-600 dark:text-gray-300 space-y-1 bg-gray-50 dark:bg-gray-800 p-2 rounded">
                                     @foreach($pesanan->detailPesanans as $item)
-                                        <div>• <strong>{{ $item->nama_item }}</strong> ({{ $item->bahan->nama_bahan ?? 'Jasa Design' }}) - Qty: {{ $item->qty }}</div>
+                                        <div>• <strong>{{ $item->nama_item }}</strong> ({{ $item->bahan->nama_bahan ?? 'Jasa' }}) - Qty: {{ $item->qty }}</div>
                                     @endforeach
                                 </div>
                                 <a href="{{ route('produksi.show', $pesanan) }}" class="inline-block mt-3 text-xs font-semibold text-green-700 dark:text-green-400 hover:underline">

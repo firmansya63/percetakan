@@ -85,6 +85,8 @@ class PesananController extends Controller implements HasMiddleware
             'items.*.catatan' => 'nullable|string',
             'items.*.finishings' => 'nullable|array',
             'jasa_design' => 'nullable|numeric|min:0',
+            'jasa_finishing' => 'nullable|numeric|min:0',
+            'jasa_potong' => 'nullable|numeric|min:0',
             'dp' => 'nullable|numeric|min:0',
             'metode_pembayaran' => 'nullable|in:tunai,transfer,qris',
         ]);
@@ -179,22 +181,30 @@ class PesananController extends Controller implements HasMiddleware
                 $totalSemuaItem += $detailPesanan->subtotal;
             }
 
-            // Item Jasa Design (opsional, harga manual, tanpa bahan & stok)
-            if ($request->filled('jasa_design') && $request->jasa_design > 0) {
-                $jasaDesign = new DetailPesanan;
-                $jasaDesign->pesanan_id = $pesanan->id;
-                $jasaDesign->bahan_id = null;
-                $jasaDesign->nama_item = 'Jasa Design';
-                $jasaDesign->is_jasa_design = true;
-                $jasaDesign->qty = 1;
-                $jasaDesign->harga_bahan = $request->jasa_design;
-                $jasaDesign->subtotal_bahan = $request->jasa_design;
-                $jasaDesign->total_finishing = 0;
-                $jasaDesign->subtotal = $request->jasa_design;
-                $jasaDesign->catatan = 'Jasa desain (harga manual)';
-                $jasaDesign->save();
+            // Item Jasa Tambahan (opsional, bisa lebih dari satu, harga manual, tanpa bahan & stok)
+            $jasaItems = [
+                'jasa_design' => 'Jasa Design',
+                'jasa_finishing' => 'Jasa Finishing',
+                'jasa_potong' => 'Jasa Potong',
+            ];
 
-                $totalSemuaItem += $jasaDesign->subtotal;
+            foreach ($jasaItems as $field => $label) {
+                if ($request->filled($field) && $request->{$field} > 0) {
+                    $jasa = new DetailPesanan;
+                    $jasa->pesanan_id = $pesanan->id;
+                    $jasa->bahan_id = null;
+                    $jasa->nama_item = $label;
+                    $jasa->is_jasa_design = true;
+                    $jasa->qty = 1;
+                    $jasa->harga_bahan = $request->{$field};
+                    $jasa->subtotal_bahan = $request->{$field};
+                    $jasa->total_finishing = 0;
+                    $jasa->subtotal = $request->{$field};
+                    $jasa->catatan = $label.' (harga manual)';
+                    $jasa->save();
+
+                    $totalSemuaItem += $jasa->subtotal;
+                }
             }
 
             $pesanan->total_harga = $totalSemuaItem;

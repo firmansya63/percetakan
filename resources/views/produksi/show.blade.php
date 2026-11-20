@@ -76,7 +76,7 @@
 
                             @if($item->is_jasa_design)
                                 <div class="text-sm text-gray-700 dark:text-gray-300 mb-3">
-                                    <span class="font-semibold">Jasa Design</span> (tidak memerlukan produksi cetak)
+                                    <span class="font-semibold">{{ $item->nama_item }}</span> (tidak memerlukan produksi cetak)
                                 </div>
                             @else
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-3">

@@ -66,7 +66,7 @@
                                 <div>
                                     <span class="font-bold text-sm text-gray-800">#{{ $idx + 1 }} {{ $item->nama_item }}</span>
                                     @if($item->is_jasa_design)
-                                        <span class="text-xs text-yellow-700 ml-2">(Jasa Design)</span>
+                                        <span class="text-xs text-yellow-700 ml-2">({{ $item->nama_item }})</span>
                                     @else
                                         <span class="text-xs text-gray-500 ml-2">({{ $item->bahan->nama_bahan ?? '-' }})</span>
                                     @endif
@@ -79,7 +79,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs text-gray-600 mb-3">
                                 <div>
                                     @if($item->is_jasa_design)
-                                        Jenis: <strong>Jasa Design (harga manual)</strong>
+                                        Jenis: <strong>{{ $item->nama_item }} (harga manual)</strong>
                                     @elseif($item->panjang && $item->lebar)
                                         Ukuran: <strong>{{ $item->panjang }}m x {{ $item->lebar }}m</strong> (Luas: {{ $item->panjang * $item->lebar }} m²)
                                     @else

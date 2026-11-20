@@ -376,9 +376,86 @@ class PercetakanSystemTest extends TestCase
         $jasaDesign = $pesanan->detailPesanans()->where('is_jasa_design', true)->first();
         $this->assertNotNull($jasaDesign);
         $this->assertNull($jasaDesign->bahan_id);
+        $this->assertEquals('Jasa Design', $jasaDesign->nama_item);
         $this->assertEquals(75000, $jasaDesign->subtotal);
 
         $expectedBahan = 100 * $bahanKertas->harga_jual;
         $this->assertEquals($expectedBahan + 75000, $pesanan->total_harga);
+    }
+
+    public function test_pesanan_dengan_jasa_finishing_dan_potong(): void
+    {
+        $kasir = User::where('email', 'kasir@percetakan.com')->first();
+        $bahanKertas = Bahan::where('jenis_cetakan', 'kertas')->first();
+
+        $response = $this->actingAs($kasir)->post('/pesanan', [
+            'nama_pelanggan_baru' => 'PT Jasa Potong',
+            'telepon_pelanggan_baru' => '0812000001',
+            'tanggal_pesanan' => now()->format('Y-m-d'),
+            'items' => [
+                [
+                    'bahan_id' => $bahanKertas->id,
+                    'nama_item' => 'Kartu Nama',
+                    'qty' => 50,
+                ],
+            ],
+            'jasa_potong' => 20000,
+            'dp' => 0,
+            'metode_pembayaran' => 'tunai',
+        ]);
+
+        $response->assertRedirect();
+
+        $pesanan = Pesanan::whereHas('pelanggan', function ($q) {
+            $q->where('nama_pelanggan', 'PT Jasa Potong');
+        })->latest()->first();
+
+        $this->assertNotNull($pesanan);
+
+        $jasaPotong = $pesanan->detailPesanans()->where('is_jasa_design', true)->first();
+        $this->assertNotNull($jasaPotong);
+        $this->assertEquals('Jasa Potong', $jasaPotong->nama_item);
+        $this->assertEquals(20000, $jasaPotong->subtotal);
+
+        $expectedBahan = 50 * $bahanKertas->harga_jual;
+        $this->assertEquals($expectedBahan + 20000, $pesanan->total_harga);
+    }
+
+    public function test_pesanan_dengan_beberapa_jasa_sekaligus(): void
+    {
+        $kasir = User::where('email', 'kasir@percetakan.com')->first();
+        $bahanKertas = Bahan::where('jenis_cetakan', 'kertas')->first();
+
+        $response = $this->actingAs($kasir)->post('/pesanan', [
+            'nama_pelanggan_baru' => 'PT Multi Jasa',
+            'telepon_pelanggan_baru' => '0812000002',
+            'tanggal_pesanan' => now()->format('Y-m-d'),
+            'items' => [
+                [
+                    'bahan_id' => $bahanKertas->id,
+                    'nama_item' => 'Spanduk',
+                    'qty' => 10,
+                ],
+            ],
+            'jasa_design' => 50000,
+            'jasa_finishing' => 30000,
+            'jasa_potong' => 20000,
+            'dp' => 0,
+            'metode_pembayaran' => 'tunai',
+        ]);
+
+        $response->assertRedirect();
+
+        $pesanan = Pesanan::whereHas('pelanggan', function ($q) {
+            $q->where('nama_pelanggan', 'PT Multi Jasa');
+        })->latest()->first();
+
+        $this->assertNotNull($pesanan);
+
+        $jasa = $pesanan->detailPesanans()->where('is_jasa_design', true)->get();
+        $this->assertCount(3, $jasa);
+
+        $expectedBahan = 10 * $bahanKertas->harga_jual;
+        $this->assertEquals($expectedBahan + 100000, $pesanan->total_harga);
     }
 }

@@ -43,7 +43,7 @@
                                     <td class="border p-2">
                                         {{ $detail->nama_item }}
                                         @if($detail->is_jasa_design)
-                                            <span class="text-xs text-yellow-700">(Jasa Design)</span>
+                                            <span class="text-xs text-yellow-700">({{ $detail->nama_item }})</span>
                                         @endif
                                     </td>
                                     <td class="border p-2 text-right">{{ $detail->qty }}</td>
