@@ -11,6 +11,7 @@ use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\PesananController;
 use App\Http\Controllers\ProduksiController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ShiftReportController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -65,6 +66,7 @@ Route::middleware('auth')->group(function () {
     Route::get('laporan/omzet', [LaporanController::class, 'omzet'])->name('laporan.omzet');
     Route::get('laporan/keuangan', [LaporanController::class, 'keuangan'])->name('laporan.keuangan');
     Route::get('laporan/pesanan', [LaporanController::class, 'pesanan'])->name('laporan.pesanan');
+    Route::get('laporan/shift', [ShiftReportController::class, 'index'])->name('laporan.shift');
 
     // Cashflow / Keuangan
     Route::resource('cashflow', CashFlowController::class);

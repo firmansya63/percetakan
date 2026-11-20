@@ -100,6 +100,11 @@
                 <a href="{{ route('laporan.omzet') }}" @click="sidebarOpen = false" class="{{ $linkBase }} {{ request()->routeIs('laporan.*') ? $linkActive : $linkInactive }}">
                     <span>Laporan</span>
                 </a>
+                @role('owner')
+                <a href="{{ route('laporan.shift') }}" @click="sidebarOpen = false" class="{{ $linkBase }} {{ request()->routeIs('laporan.shift') ? $linkActive : $linkInactive }}">
+                    <span>Laporan Shift</span>
+                </a>
+                @endrole
             </div>
             @endcan
 

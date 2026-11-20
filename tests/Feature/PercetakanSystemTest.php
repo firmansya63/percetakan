@@ -3,12 +3,14 @@
 namespace Tests\Feature;
 
 use App\Models\Bahan;
+use App\Models\CashFlow;
 use App\Models\DetailPesanan;
 use App\Models\Finishing;
 use App\Models\Pesanan;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -457,5 +459,59 @@ class PercetakanSystemTest extends TestCase
 
         $expectedBahan = 10 * $bahanKertas->harga_jual;
         $this->assertEquals($expectedBahan + 100000, $pesanan->total_harga);
+    }
+
+    public function test_owner_can_access_laporan_shift(): void
+    {
+        $owner = User::where('email', 'owner@percetakan.com')->first();
+
+        $response = $this->actingAs($owner)->get(route('laporan.shift'));
+
+        $response->assertStatus(200);
+        $response->assertSeeText('Laporan Keuangan per Shift');
+    }
+
+    public function test_kasir_cannot_access_laporan_shift(): void
+    {
+        $kasir = User::where('email', 'kasir@percetakan.com')->first();
+
+        $response = $this->actingAs($kasir)->get(route('laporan.shift'));
+
+        $response->assertStatus(403);
+    }
+
+    public function test_laporan_shift_menghitung_ringkasan_per_shift(): void
+    {
+        $owner = User::where('email', 'owner@percetakan.com')->first();
+
+        // Transaksi shift 1 (08:00 - 16:00)
+        CashFlow::create([
+            'tanggal' => '2026-11-17',
+            'tipe' => 'masuk',
+            'kategori' => 'Pemasukan Lainnya',
+            'jumlah' => 100000,
+            'metode_pembayaran' => 'tunai',
+            'user_id' => $owner->id,
+        ]);
+        CashFlow::create([
+            'tanggal' => '2026-11-17',
+            'tipe' => 'keluar',
+            'kategori' => 'Operasional',
+            'jumlah' => 30000,
+            'user_id' => $owner->id,
+        ]);
+
+        // Set created_at agar masuk rentang shift 1
+        CashFlow::query()->update(['created_at' => Carbon::parse('2026-11-17 10:00:00')]);
+
+        $response = $this->actingAs($owner)->get(route('laporan.shift', [
+            'tanggal' => '2026-11-17',
+            'shift' => 1,
+        ]));
+
+        $response->assertOk();
+        $response->assertSeeText('Rp 100.000');
+        $response->assertSeeText('Rp 30.000');
+        $response->assertSeeText('Rp 70.000'); // saldo
     }
 }
