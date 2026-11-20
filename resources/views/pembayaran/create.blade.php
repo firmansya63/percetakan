@@ -35,6 +35,10 @@
                         <div class="mb-4">
                             <label class="block text-gray-700 font-bold mb-2">Jumlah Pembayaran</label>
                             <input type="number" name="jumlah" placeholder="0" required step="any" min="1" class="w-full border rounded px-3 py-2">
+                            <p class="text-xs text-gray-500 mt-1">
+                                Sisa tagihan: Rp {{ number_format($pesanan->sisa_bayar, 0, ',', '.') }}.
+                                Jika dibayar lebih, selisihnya akan otomatis dicatat sebagai kembalian.
+                            </p>
                         </div>
 
                         <div class="mb-4">

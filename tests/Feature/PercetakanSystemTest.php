@@ -246,6 +246,9 @@ class PercetakanSystemTest extends TestCase
             'metode_pembayaran' => 'tunai',
         ];
 
+        $bahanBannerStockBefore = $bahanBanner->stok;
+        $bahanKertasStockBefore = $bahanKertas->stok;
+
         $response = $this->actingAs($kasir)->post('/pesanan', $postData);
         $response->assertRedirect();
 
@@ -268,6 +271,76 @@ class PercetakanSystemTest extends TestCase
         $this->assertEquals($expectedGrandTotal, $pesanan->total_harga);
         $this->assertEquals(50000, $pesanan->total_dp);
         $this->assertEquals($expectedGrandTotal - 50000, $pesanan->sisa_bayar);
+        $this->assertEquals('belum_lunas', $pesanan->status_pembayaran);
+
+        // Stok bahan berkurang sesuai konsumsi
+        $this->assertEquals($bahanBannerStockBefore - 12, $bahanBanner->fresh()->stok);
+        $this->assertEquals($bahanKertasStockBefore - 100, $bahanKertas->fresh()->stok);
+    }
+
+    public function test_pembayaran_lebih_dari_sisa_menyimpan_kembalian(): void
+    {
+        $kasir = User::where('email', 'kasir@percetakan.com')->first();
+        $pesanan = Pesanan::create([
+            'nomor_nota' => 'INV-TEST-KEMBALIAN',
+            'user_id' => $kasir->id,
+            'tanggal_pesanan' => now()->toDateString(),
+            'total_harga' => 240000,
+            'total_dp' => 0,
+            'sisa_bayar' => 240000,
+            'status_pembayaran' => 'belum_lunas',
+        ]);
+
+        $response = $this->actingAs($kasir)->post(route('pembayaran.store'), [
+            'pesanan_id' => $pesanan->id,
+            'jumlah' => 250000,
+            'tipe' => 'pelunasan',
+            'metode_pembayaran' => 'tunai',
+        ]);
+
+        $response->assertRedirect(route('pesanan.show', $pesanan));
+
+        $this->assertDatabaseHas('pembayarans', [
+            'pesanan_id' => $pesanan->id,
+            'jumlah' => 250000,
+            'kembalian' => 10000,
+        ]);
+
+        $pesanan->refresh();
+        $this->assertEquals(0, $pesanan->sisa_bayar);
+        $this->assertEquals('lunas', $pesanan->status_pembayaran);
+    }
+
+    public function test_pembayaran_tidak_lebih_dari_sisa_tidak_ada_kembalian(): void
+    {
+        $kasir = User::where('email', 'kasir@percetakan.com')->first();
+        $pesanan = Pesanan::create([
+            'nomor_nota' => 'INV-TEST-TANPA-KEMBALIAN',
+            'user_id' => $kasir->id,
+            'tanggal_pesanan' => now()->toDateString(),
+            'total_harga' => 240000,
+            'total_dp' => 0,
+            'sisa_bayar' => 240000,
+            'status_pembayaran' => 'belum_lunas',
+        ]);
+
+        $response = $this->actingAs($kasir)->post(route('pembayaran.store'), [
+            'pesanan_id' => $pesanan->id,
+            'jumlah' => 200000,
+            'tipe' => 'pelunasan',
+            'metode_pembayaran' => 'tunai',
+        ]);
+
+        $response->assertRedirect(route('pesanan.show', $pesanan));
+
+        $this->assertDatabaseHas('pembayarans', [
+            'pesanan_id' => $pesanan->id,
+            'jumlah' => 200000,
+            'kembalian' => 0,
+        ]);
+
+        $pesanan->refresh();
+        $this->assertEquals(40000, $pesanan->sisa_bayar);
         $this->assertEquals('belum_lunas', $pesanan->status_pembayaran);
     }
 }

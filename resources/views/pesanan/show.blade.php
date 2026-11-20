@@ -147,6 +147,7 @@
                                 <th class="p-2">Metode</th>
                                 <th class="p-2">Kasir</th>
                                 <th class="p-2 text-right">Jumlah</th>
+                                <th class="p-2 text-right">Kembalian</th>
                                 <th class="p-2 text-right">Kwitansi</th>
                             </tr>
                         </thead>
@@ -162,12 +163,15 @@
                                     <td class="p-2 uppercase text-xs">{{ $pembayaran->metode_pembayaran }}</td>
                                     <td class="p-2 text-xs">{{ $pembayaran->user->name ?? 'Kasir' }}</td>
                                     <td class="p-2 text-right font-bold text-green-600">Rp {{ number_format($pembayaran->jumlah, 0, ',', '.') }}</td>
+                                    <td class="p-2 text-right font-semibold {{ (float) $pembayaran->kembalian > 0 ? 'text-blue-600' : 'text-gray-400' }}">
+                                        {{ (float) $pembayaran->kembalian > 0 ? 'Rp ' . number_format($pembayaran->kembalian, 0, ',', '.') : '-' }}
+                                    </td>
                                     <td class="p-2 text-right">
                                         <a href="{{ route('pembayaran.receipt', $pembayaran) }}" class="text-xs text-blue-600 hover:underline">Lihat Kwitansi</a>
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="6" class="p-3 text-center text-gray-500 text-xs">Belum ada catatan pembayaran.</td></tr>
+                                <tr><td colspan="7" class="p-3 text-center text-gray-500 text-xs">Belum ada catatan pembayaran.</td></tr>
                             @endforelse
                         </tbody>
                     </table>

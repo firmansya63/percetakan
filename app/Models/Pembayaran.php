@@ -10,6 +10,7 @@ class Pembayaran extends Model
         'pesanan_id',
         'user_id',
         'jumlah',
+        'kembalian',
         'tipe',
         'metode_pembayaran',
         'catatan',
@@ -19,6 +20,7 @@ class Pembayaran extends Model
     {
         return [
             'jumlah' => 'decimal:2',
+            'kembalian' => 'decimal:2',
         ];
     }
 

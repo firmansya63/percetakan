@@ -13,9 +13,13 @@
                     <a href="{{ route('pesanan.show', $pembayaran->pesanan) }}" class="text-xs text-gray-500 hover:underline">&larr; Kembali ke Pesanan</a>
                 </div>
 
-                <div class="border-b-2 border-dashed pb-4 mb-4 text-center">
-                    <h2 class="text-xl font-bold uppercase tracking-wider">Kwitansi Pembayaran Percetakan</h2>
-                    <p class="text-xs text-gray-500">Tanda Bukti Pembayaran Sah</p>
+                <div class="border-b-2 border-dashed pb-4 mb-4">
+                    <x-company-header class="mb-3 justify-center text-center" />
+
+                    <div class="text-center">
+                        <h2 class="text-xl font-bold uppercase tracking-wider">Kwitansi Pembayaran</h2>
+                        <p class="text-xs text-gray-500">Tanda Bukti Pembayaran Sah</p>
+                    </div>
                 </div>
 
                 <div class="space-y-3 text-sm">
@@ -55,6 +59,12 @@
                         <span>Sisa Tagihan:</span>
                         <span>Rp {{ number_format($pembayaran->pesanan->sisa_bayar, 0, ',', '.') }}</span>
                     </div>
+                    @if((float) $pembayaran->kembalian > 0)
+                        <div class="flex justify-between text-sm font-bold text-blue-600">
+                            <span>Kembalian:</span>
+                            <span>Rp {{ number_format($pembayaran->kembalian, 0, ',', '.') }}</span>
+                        </div>
+                    @endif
                 </div>
 
                 <div class="mt-8 pt-4 border-t border-dashed flex justify-between text-xs text-center text-gray-500">

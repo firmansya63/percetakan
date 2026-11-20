@@ -61,10 +61,16 @@ class PembayaranController extends Controller implements HasMiddleware
         $pesanan = Pesanan::findOrFail($request->pesanan_id);
 
         DB::transaction(function () use ($request, $pesanan) {
+            $sisaSebelum = $pesanan->total_harga - $pesanan->total_dp;
+
+            // Hitung kembalian: kelebihan bayar dari sisa tagihan saat ini.
+            $kembalian = max(0, (float) $request->jumlah - (float) $sisaSebelum);
+
             $pembayaran = new Pembayaran();
             $pembayaran->pesanan_id = $pesanan->id;
             $pembayaran->user_id = Auth::id();
             $pembayaran->jumlah = $request->jumlah;
+            $pembayaran->kembalian = $kembalian;
             $pembayaran->tipe = $request->tipe;
             $pembayaran->metode_pembayaran = $request->metode_pembayaran;
             $pembayaran->catatan = $request->catatan;
