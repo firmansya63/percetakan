@@ -74,6 +74,11 @@
                                 </div>
                             </div>
 
+                            @if($item->is_jasa_design)
+                                <div class="text-sm text-gray-700 dark:text-gray-300 mb-3">
+                                    <span class="font-semibold">Jasa Design</span> (tidak memerlukan produksi cetak)
+                                </div>
+                            @else
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-3">
                                 <div>
                                     <span class="text-xs text-gray-500 block">Bahan</span>
@@ -98,6 +103,7 @@
                                     <span class="text-base font-bold text-blue-600">{{ $item->qty }} {{ $item->bahan->satuan }}</span>
                                 </div>
                             </div>
+                            @endif
 
                             <!-- Finishing list -->
                             <div class="pt-2 border-t border-gray-200 dark:border-gray-700">

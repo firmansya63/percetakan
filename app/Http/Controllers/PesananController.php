@@ -84,6 +84,7 @@ class PesananController extends Controller implements HasMiddleware
             'items.*.qty' => 'required|integer|min:1',
             'items.*.catatan' => 'nullable|string',
             'items.*.finishings' => 'nullable|array',
+            'jasa_design' => 'nullable|numeric|min:0',
             'dp' => 'nullable|numeric|min:0',
             'metode_pembayaran' => 'nullable|in:tunai,transfer,qris',
         ]);
@@ -176,6 +177,24 @@ class PesananController extends Controller implements HasMiddleware
                 $bahan->decrement('stok', $stokDigunakan);
 
                 $totalSemuaItem += $detailPesanan->subtotal;
+            }
+
+            // Item Jasa Design (opsional, harga manual, tanpa bahan & stok)
+            if ($request->filled('jasa_design') && $request->jasa_design > 0) {
+                $jasaDesign = new DetailPesanan;
+                $jasaDesign->pesanan_id = $pesanan->id;
+                $jasaDesign->bahan_id = null;
+                $jasaDesign->nama_item = 'Jasa Design';
+                $jasaDesign->is_jasa_design = true;
+                $jasaDesign->qty = 1;
+                $jasaDesign->harga_bahan = $request->jasa_design;
+                $jasaDesign->subtotal_bahan = $request->jasa_design;
+                $jasaDesign->total_finishing = 0;
+                $jasaDesign->subtotal = $request->jasa_design;
+                $jasaDesign->catatan = 'Jasa desain (harga manual)';
+                $jasaDesign->save();
+
+                $totalSemuaItem += $jasaDesign->subtotal;
             }
 
             $pesanan->total_harga = $totalSemuaItem;

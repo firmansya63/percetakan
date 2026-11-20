@@ -65,7 +65,11 @@
                             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mb-2">
                                 <div>
                                     <span class="font-bold text-sm text-gray-800">#{{ $idx + 1 }} {{ $item->nama_item }}</span>
-                                    <span class="text-xs text-gray-500 ml-2">({{ $item->bahan->nama_bahan }})</span>
+                                    @if($item->is_jasa_design)
+                                        <span class="text-xs text-yellow-700 ml-2">(Jasa Design)</span>
+                                    @else
+                                        <span class="text-xs text-gray-500 ml-2">({{ $item->bahan->nama_bahan ?? '-' }})</span>
+                                    @endif
                                 </div>
                                 <div class="text-sm font-bold text-green-600">
                                     Subtotal: Rp {{ number_format($item->subtotal, 0, ',', '.') }}
@@ -74,15 +78,17 @@
 
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs text-gray-600 mb-3">
                                 <div>
-                                    @if($item->panjang && $item->lebar)
+                                    @if($item->is_jasa_design)
+                                        Jenis: <strong>Jasa Design (harga manual)</strong>
+                                    @elseif($item->panjang && $item->lebar)
                                         Ukuran: <strong>{{ $item->panjang }}m x {{ $item->lebar }}m</strong> (Luas: {{ $item->panjang * $item->lebar }} m²)
                                     @else
-                                        Ukuran: <strong>Standar ({{ $item->bahan->satuan }})</strong>
+                                        Ukuran: <strong>Standar ({{ $item->bahan->satuan ?? '-' }})</strong>
                                     @endif
                                     &bull; Qty: <strong>{{ $item->qty }}</strong>
                                 </div>
                                 <div>
-                                    Harga Bahan: Rp {{ number_format($item->harga_bahan, 0, ',', '.') }}
+                                    Harga: Rp {{ number_format($item->harga_bahan, 0, ',', '.') }}
                                     (Subtotal: Rp {{ number_format($item->subtotal_bahan, 0, ',', '.') }})
                                 </div>
                                 <div>
@@ -98,6 +104,7 @@
                             </div>
 
                             <!-- Upload & Status File Desain -->
+                            @if(! $item->is_jasa_design)
                             <div class="pt-3 border-t flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
                                 <div class="text-xs">
                                     @if($item->file_desain)
@@ -122,6 +129,7 @@
                                     </button>
                                 </form>
                             </div>
+                            @endif
                         </div>
                     @endforeach
                 </div>

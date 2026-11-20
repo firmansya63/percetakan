@@ -10,6 +10,7 @@ class DetailPesanan extends Model
         'pesanan_id',
         'bahan_id',
         'nama_item',
+        'is_jasa_design',
         'deskripsi',
         'panjang',
         'lebar',
@@ -27,6 +28,7 @@ class DetailPesanan extends Model
         return [
             'panjang' => 'decimal:2',
             'lebar' => 'decimal:2',
+            'is_jasa_design' => 'boolean',
             'harga_bahan' => 'decimal:2',
             'subtotal_bahan' => 'decimal:2',
             'total_finishing' => 'decimal:2',
@@ -51,6 +53,16 @@ class DetailPesanan extends Model
 
     public function hitungSubtotal()
     {
+        if ($this->is_jasa_design) {
+            // Jasa design: harga manual, tidak bergantung pada bahan/stok.
+            $this->subtotal_bahan = $this->qty * $this->harga_bahan;
+            $this->total_finishing = 0;
+            $this->subtotal = $this->subtotal_bahan;
+            $this->save();
+
+            return $this->subtotal;
+        }
+
         $bahan = $this->bahan;
 
         if ($bahan->jenis_cetakan === 'banner' && $this->panjang && $this->lebar) {
