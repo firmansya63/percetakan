@@ -190,9 +190,6 @@
                         <a href="{{ route('pesanan.invoice', $pesanan) }}" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded shadow">
                             Cetak Nota / Invoice
                         </a>
-                        <a href="{{ route('pesanan.edit', $pesanan) }}" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-semibold rounded">
-                            Ubah Status / Catatan
-                        </a>
                     </div>
                     <a href="{{ route('pesanan.index') }}" class="text-sm text-gray-500 hover:underline">&larr; Kembali ke Daftar Pesanan</a>
                 </div>
