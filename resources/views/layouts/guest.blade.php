@@ -9,7 +9,7 @@
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        <link href="https://fonts.bunny.net/css?family=figtree:300,400,500,600,700,800&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
         <script src="https://cdn.tailwindcss.com"></script>
@@ -25,19 +25,31 @@
             };
         </script>
         <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+        <style>
+            @keyframes float {
+                0%, 100% { transform: translateY(0px); }
+                50% { transform: translateY(-10px); }
+            }
+            @keyframes fadeInUp {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            @keyframes slideInLeft {
+                from { opacity: 0; transform: translateX(-30px); }
+                to { opacity: 1; transform: translateX(0); }
+            }
+            .animate-float { animation: float 3s ease-in-out infinite; }
+            .animate-fade-in-up { animation: fadeInUp 0.6s ease-out forwards; }
+            .animate-slide-in-left { animation: slideInLeft 0.6s ease-out forwards; }
+            .animation-delay-100 { animation-delay: 0.1s; }
+            .animation-delay-200 { animation-delay: 0.2s; }
+            .animation-delay-300 { animation-delay: 0.3s; }
+            .animation-delay-400 { animation-delay: 0.4s; }
+            [x-cloak] { display: none !important; }
+        </style>
     </head>
     <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100 dark:bg-gray-900">
-            <div class="text-center">
-                <a href="/" class="inline-flex flex-col items-center gap-2">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500 object-contain" />
-                    <span class="font-semibold text-gray-700 dark:text-gray-300">{{ $companyProfile->name ?? config('app.name', 'Percetakan') }}</span>
-                </a>
-            </div>
-
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
-                {{ $slot }}
-            </div>
-        </div>
+        {{ $slot }}
     </body>
 </html>
