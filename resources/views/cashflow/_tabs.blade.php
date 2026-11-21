@@ -15,6 +15,11 @@
             'route' => 'laporan.shift',
             'active' => request()->routeIs('laporan.shift'),
         ],
+        'omzet' => [
+            'label' => 'Omzet',
+            'route' => 'laporan.omzet',
+            'active' => request()->routeIs('laporan.omzet'),
+        ],
     ];
 @endphp
 
