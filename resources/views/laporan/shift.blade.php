@@ -31,10 +31,18 @@
             </div>
 
             <!-- Summary Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4">
                 <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border-l-4 border-green-500">
                     <span class="text-xs text-gray-500 uppercase font-semibold">Total Uang Masuk</span>
                     <h4 class="text-2xl font-bold text-green-600 mt-1">Rp {{ number_format($totalMasuk, 0, ',', '.') }}</h4>
+                </div>
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border-l-4 border-blue-500">
+                    <span class="text-xs text-gray-500 uppercase font-semibold">Uang Muka (DP)</span>
+                    <h4 class="text-2xl font-bold text-blue-600 mt-1">Rp {{ number_format($totalDP, 0, ',', '.') }}</h4>
+                </div>
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border-l-4 border-teal-500">
+                    <span class="text-xs text-gray-500 uppercase font-semibold">Pelunasan</span>
+                    <h4 class="text-2xl font-bold text-teal-600 mt-1">Rp {{ number_format($totalPelunasan, 0, ',', '.') }}</h4>
                 </div>
                 <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border-l-4 border-red-500">
                     <span class="text-xs text-gray-500 uppercase font-semibold">Total Uang Keluar</span>

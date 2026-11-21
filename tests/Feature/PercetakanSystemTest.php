@@ -6,6 +6,7 @@ use App\Models\Bahan;
 use App\Models\CashFlow;
 use App\Models\DetailPesanan;
 use App\Models\Finishing;
+use App\Models\Pembayaran;
 use App\Models\Pesanan;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -513,5 +514,71 @@ class PercetakanSystemTest extends TestCase
         $response->assertSeeText('Rp 100.000');
         $response->assertSeeText('Rp 30.000');
         $response->assertSeeText('Rp 70.000'); // saldo
+    }
+
+    public function test_laporan_shift_memisahkan_dp_dan_pelunasan(): void
+    {
+        $owner = User::where('email', 'owner@percetakan.com')->first();
+
+        $pesanan = Pesanan::create([
+            'nomor_nota' => 'INV-SHIFT-DP',
+            'user_id' => $owner->id,
+            'tanggal_pesanan' => '2026-11-21',
+            'total_harga' => 240000,
+            'total_dp' => 0,
+            'sisa_bayar' => 240000,
+            'status_pembayaran' => 'belum_lunas',
+        ]);
+
+        // Pembayaran DP
+        $dp = Pembayaran::create([
+            'pesanan_id' => $pesanan->id,
+            'user_id' => $owner->id,
+            'jumlah' => 50000,
+            'tipe' => 'dp',
+            'metode_pembayaran' => 'tunai',
+        ]);
+        // Pembayaran Pelunasan
+        $pelunasan = Pembayaran::create([
+            'pesanan_id' => $pesanan->id,
+            'user_id' => $owner->id,
+            'jumlah' => 190000,
+            'tipe' => 'pelunasan',
+            'metode_pembayaran' => 'tunai',
+        ]);
+
+        // Cashflow sinkron untuk keduanya, dalam shift 1
+        CashFlow::create([
+            'tanggal' => '2026-11-21',
+            'tipe' => 'masuk',
+            'kategori' => 'Pembayaran DP',
+            'jumlah' => 50000,
+            'metode_pembayaran' => 'tunai',
+            'pembayaran_id' => $dp->id,
+            'user_id' => $owner->id,
+        ]);
+        CashFlow::create([
+            'tanggal' => '2026-11-21',
+            'tipe' => 'masuk',
+            'kategori' => 'Pelunasan Pesanan',
+            'jumlah' => 190000,
+            'metode_pembayaran' => 'tunai',
+            'pembayaran_id' => $pelunasan->id,
+            'user_id' => $owner->id,
+        ]);
+
+        CashFlow::query()->update(['created_at' => Carbon::parse('2026-11-21 10:00:00')]);
+
+        $response = $this->actingAs($owner)->get(route('laporan.shift', [
+            'tanggal' => '2026-11-21',
+            'shift' => 1,
+        ]));
+
+        $response->assertOk();
+        $response->assertSeeText('Uang Muka (DP)');
+        $response->assertSeeText('Pelunasan');
+        $response->assertSeeText('Rp 50.000');  // DP
+        $response->assertSeeText('Rp 190.000'); // Pelunasan
+        $response->assertSeeText('Rp 240.000'); // total masuk
     }
 }

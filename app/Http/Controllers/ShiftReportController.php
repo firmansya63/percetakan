@@ -41,6 +41,17 @@ class ShiftReportController extends Controller implements HasMiddleware
         $totalKeluar = (clone $query)->where('tipe', 'keluar')->sum('jumlah');
         $saldo = $totalMasuk - $totalKeluar;
 
+        // Pisahkan uang masuk dari pembayaran: DP vs Pelunasan.
+        $totalDP = (clone $query)
+            ->where('tipe', 'masuk')
+            ->whereHas('pembayaran', fn ($q) => $q->where('tipe', 'dp'))
+            ->sum('jumlah');
+
+        $totalPelunasan = (clone $query)
+            ->where('tipe', 'masuk')
+            ->whereHas('pembayaran', fn ($q) => $q->where('tipe', 'pelunasan'))
+            ->sum('jumlah');
+
         $perMetode = (clone $query)
             ->selectRaw('COALESCE(metode_pembayaran, \'lainnya\') as metode, SUM(jumlah) as total')
             ->where('tipe', 'masuk')
@@ -71,6 +82,8 @@ class ShiftReportController extends Controller implements HasMiddleware
             'totalMasuk',
             'totalKeluar',
             'saldo',
+            'totalDP',
+            'totalPelunasan',
             'perMetode',
             'perKategori',
             'perKasir',
