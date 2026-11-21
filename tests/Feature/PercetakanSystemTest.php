@@ -650,4 +650,52 @@ class PercetakanSystemTest extends TestCase
         $response->assertSeeText('Pembayaran DP');
         $response->assertSeeText('Pelunasan Pesanan');
     }
+
+    public function test_cashflow_halaman_pertama_tanpa_filter_menampilkan_data(): void
+    {
+        $owner = User::where('email', 'owner@percetakan.com')->first();
+
+        // Data hari ini (default bulan berjalan harus mencakup ini).
+        CashFlow::create([
+            'tanggal' => now()->format('Y-m-d'),
+            'tipe' => 'masuk',
+            'kategori' => 'Pembayaran DP',
+            'jumlah' => 100000,
+            'metode_pembayaran' => 'tunai',
+            'user_id' => $owner->id,
+        ]);
+
+        // Akses tanpa parameter filter sama sekali (seperti buka halaman pertama kali).
+        $response = $this->actingAs($owner)->get(route('cashflow.index'));
+
+        $response->assertOk();
+        $response->assertSeeText('Pembayaran DP');
+        $response->assertSeeText('Rp 100.000');
+    }
+
+    public function test_cashflow_filter_kategori_semua_mengirim_field_kosong_tetap_menampilkan_data(): void
+    {
+        $owner = User::where('email', 'owner@percetakan.com')->first();
+
+        CashFlow::create([
+            'tanggal' => now()->format('Y-m-d'),
+            'tipe' => 'masuk',
+            'kategori' => 'Pembayaran DP',
+            'jumlah' => 100000,
+            'metode_pembayaran' => 'tunai',
+            'user_id' => $owner->id,
+        ]);
+
+        // Persis seperti submit form Filter dengan semua dropdown "Semua" (field kosong).
+        $response = $this->actingAs($owner)->get(route('cashflow.index', [
+            'start_date' => now()->startOfMonth()->format('Y-m-d'),
+            'end_date' => now()->endOfMonth()->format('Y-m-d'),
+            'tipe' => '',
+            'kategori' => '',
+        ]));
+
+        $response->assertOk();
+        $response->assertSeeText('Pembayaran DP');
+        $response->assertSeeText('Rp 100.000');
+    }
 }

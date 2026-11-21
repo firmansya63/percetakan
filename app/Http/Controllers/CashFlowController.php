@@ -37,7 +37,7 @@ class CashFlowController extends Controller implements HasMiddleware
             $query->where('tipe', $tipe);
         }
 
-        if ($kategori !== '') {
+        if (! empty($kategori)) {
             $query->where('kategori', $kategori);
         }
 
