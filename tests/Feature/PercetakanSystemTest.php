@@ -618,4 +618,36 @@ class PercetakanSystemTest extends TestCase
             'jumlah' => 50000,
         ]);
     }
+
+    public function test_cashflow_filter_kategori_semua_menampilkan_dp_dan_pelunasan(): void
+    {
+        $owner = User::where('email', 'owner@percetakan.com')->first();
+
+        CashFlow::create([
+            'tanggal' => '2026-11-21',
+            'tipe' => 'masuk',
+            'kategori' => 'Pembayaran DP',
+            'jumlah' => 50000,
+            'metode_pembayaran' => 'tunai',
+            'user_id' => $owner->id,
+        ]);
+        CashFlow::create([
+            'tanggal' => '2026-11-21',
+            'tipe' => 'masuk',
+            'kategori' => 'Pelunasan Pesanan',
+            'jumlah' => 190000,
+            'metode_pembayaran' => 'tunai',
+            'user_id' => $owner->id,
+        ]);
+
+        // Kategori = semua (kosong)
+        $response = $this->actingAs($owner)->get(route('cashflow.index', [
+            'start_date' => '2026-11-21',
+            'end_date' => '2026-11-21',
+        ]));
+
+        $response->assertOk();
+        $response->assertSeeText('Pembayaran DP');
+        $response->assertSeeText('Pelunasan Pesanan');
+    }
 }
