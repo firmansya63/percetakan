@@ -171,28 +171,4 @@
         </div>
         @endcan
     </nav>
-
-    {{-- User section at bottom --}}
-    <div class="border-t border-gray-200/80 dark:border-gray-700 p-4 shrink-0">
-        <div class="flex items-center gap-3 mb-3">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-sm shrink-0">
-                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-            </div>
-            <div class="min-w-0">
-                <p class="text-sm font-semibold text-gray-800 dark:text-gray-200 truncate">{{ Auth::user()->name }}</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ Auth::user()->email }}</p>
-            </div>
-        </div>
-        <div class="flex gap-2">
-            <a href="{{ route('profile.edit') }}" @click="sidebarOpen = false" class="flex-1 text-center px-3 py-2 text-xs font-medium rounded-lg border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                Profile
-            </a>
-            <form method="POST" action="{{ route('logout') }}" class="flex-1">
-                @csrf
-                <button type="submit" class="w-full px-3 py-2 text-xs font-medium rounded-lg border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors">
-                    Log Out
-                </button>
-            </form>
-        </div>
-    </div>
 </aside>
