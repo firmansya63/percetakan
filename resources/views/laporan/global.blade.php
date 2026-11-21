@@ -7,22 +7,6 @@
                 </h2>
                 <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Konsolidasi pemasukan, HPP, pengeluaran operasional, dan piutang</p>
             </div>
-            <div class="flex items-center gap-2">
-                <a href="{{ route('laporan.global.export', request()->query()) }}"
-                   class="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md text-sm font-medium">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                    </svg>
-                    Export Excel (.csv)
-                </a>
-                <button onclick="window.print()"
-                        class="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-medium print:hidden">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18.25 7.034V3.375" />
-                    </svg>
-                    Export PDF (Cetak)
-                </button>
-            </div>
         </div>
     </x-slot>
 
@@ -76,6 +60,23 @@
                             <a href="{{ route('laporan.global') }}" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-md text-sm font-medium">Reset</a>
                         </div>
                     </div>
+
+                    <div class="flex flex-wrap items-center gap-2 pt-4 border-t border-gray-100 dark:border-gray-700">
+                        <a href="{{ route('laporan.global.export', request()->query()) }}"
+                           class="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md text-sm font-medium">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                            </svg>
+                            Export Excel (.csv)
+                        </a>
+                        <button onclick="window.print()"
+                                class="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-medium print:hidden">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18.25 7.034V3.375" />
+                            </svg>
+                            Export PDF (Cetak)
+                        </button>
+                    </div>
                 </form>
             </div>
 
@@ -117,33 +118,80 @@
                 </div>
             </div>
 
-            {{-- Grafik Tren --}}
+            {{-- Grafik Tren (Chart Garis) --}}
             <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-                <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Tren Pemasukan vs Pengeluaran</h3>
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100">Tren Pemasukan vs Pengeluaran</h3>
+                    <div class="flex items-center gap-4 text-xs text-gray-500">
+                        <span class="inline-flex items-center gap-1.5"><span class="w-3 h-0.5 rounded bg-green-500 inline-block"></span> Pemasukan</span>
+                        <span class="inline-flex items-center gap-1.5"><span class="w-3 h-0.5 rounded bg-red-500 inline-block"></span> Pengeluaran</span>
+                    </div>
+                </div>
                 @php
                     $maxVal = max(1, $tren->max('masuk'), $tren->max('keluar'));
+                    $count = $tren->count();
+                    $paddingX = 20;
+                    $chartW = 800;
+                    $chartH = 220;
+                    $padTop = 20;
+                    $padBottom = 30;
+                    $plotW = $chartW - $paddingX * 2;
+                    $plotH = $chartH - $padTop - $padBottom;
+
+                    $pointsMasuk = [];
+                    $pointsKeluar = [];
+                    $labels = [];
+                    foreach ($tren as $i => $item) {
+                        $x = $count <= 1 ? $paddingX + $plotW / 2 : $paddingX + ($plotW * $i / ($count - 1));
+                        $yMasuk = $padTop + $plotH - ($item['masuk'] / $maxVal) * $plotH;
+                        $yKeluar = $padTop + $plotH - ($item['keluar'] / $maxVal) * $plotH;
+                        $pointsMasuk[] = $x . ',' . $yMasuk;
+                        $pointsKeluar[] = $x . ',' . $yKeluar;
+                        $labels[] = $item['label'];
+                    }
+                    $polyMasuk = implode(' ', $pointsMasuk);
+                    $polyKeluar = implode(' ', $pointsKeluar);
+
+                    // Garis grid horizontal (5 level).
+                    $grid = [];
+                    for ($g = 0; $g <= 4; $g++) {
+                        $y = $padTop + ($plotH * $g / 4);
+                        $val = $maxVal * (1 - $g / 4);
+                        $grid[] = ['y' => $y, 'val' => $val];
+                    }
                 @endphp
-                <div class="space-y-2">
-                    @foreach($tren as $item)
-                        <div class="flex items-center gap-3">
-                            <span class="w-14 text-xs text-gray-500 shrink-0">{{ $item['label'] }}</span>
-                            <div class="flex-1 space-y-1">
-                                <div class="flex items-center gap-2">
-                                    <div class="h-3 rounded bg-green-500" style="width: {{ max(2, ($item['masuk'] / $maxVal) * 100) }}%"></div>
-                                    <span class="text-[10px] text-green-600 whitespace-nowrap">{{ number_format($item['masuk'], 0, ',', '.') }}</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <div class="h-3 rounded bg-red-500" style="width: {{ max(2, ($item['keluar'] / $maxVal) * 100) }}%"></div>
-                                    <span class="text-[10px] text-red-600 whitespace-nowrap">{{ number_format($item['keluar'], 0, ',', '.') }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
+                <div class="overflow-x-auto pb-2">
+                    <svg viewBox="0 0 {{ $chartW }} {{ $chartH }}" class="w-full min-w-[600px]" preserveAspectRatio="xMidYMid meet">
+                        @foreach($grid as $g)
+                            <line x1="{{ $paddingX }}" y1="{{ $g['y'] }}" x2="{{ $chartW - $paddingX }}" y2="{{ $g['y'] }}"
+                                  stroke="{{ '#e5e7eb' }}" stroke-width="1" stroke-dasharray="4 4" />
+                            <text x="{{ $paddingX - 6 }}" y="{{ $g['y'] + 3 }}" text-anchor="end" class="fill-gray-400" font-size="10">
+                                {{ $g['val'] >= 1000000 ? number_format($g['val'] / 1000000, 1) . 'jt' : number_format($g['val'] / 1000, 0) . 'rb' }}
+                            </text>
+                        @endforeach
+
+                        <polyline points="{{ $polyMasuk }}" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" />
+                        <polyline points="{{ $polyKeluar }}" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" />
+
+                        @foreach ($tren as $i => $item)
+                            @php
+                                $x = $count <= 1 ? $paddingX + $plotW / 2 : $paddingX + ($plotW * $i / ($count - 1));
+                                $yMasuk = $padTop + $plotH - ($item['masuk'] / $maxVal) * $plotH;
+                                $yKeluar = $padTop + $plotH - ($item['keluar'] / $maxVal) * $plotH;
+                            @endphp
+                            <circle cx="{{ $x }}" cy="{{ $yMasuk }}" r="3.5" fill="#22c55e" stroke="#fff" stroke-width="1.5">
+                                <title>{{ $item['tanggal'] }} — Masuk: {{ number_format($item['masuk'], 0, ',', '.') }}</title>
+                            </circle>
+                            <circle cx="{{ $x }}" cy="{{ $yKeluar }}" r="3.5" fill="#ef4444" stroke="#fff" stroke-width="1.5">
+                                <title>{{ $item['tanggal'] }} — Keluar: {{ number_format($item['keluar'], 0, ',', '.') }}</title>
+                            </circle>
+                            @if($count <= 31)
+                                <text x="{{ $x }}" y="{{ $chartH - 8 }}" text-anchor="middle" class="fill-gray-400" font-size="10">{{ $item['label'] }}</text>
+                            @endif
+                        @endforeach
+                    </svg>
                 </div>
-                <div class="flex items-center gap-4 mt-4 text-xs text-gray-500">
-                    <span class="inline-flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-green-500 inline-block"></span> Pemasukan</span>
-                    <span class="inline-flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-red-500 inline-block"></span> Pengeluaran</span>
-                </div>
+                <p class="text-[11px] text-gray-400 mt-2">Arahkan kursor ke titik untuk melihat rincian tanggal & nilai.</p>
             </div>
 
             {{-- Laporan Laba Rugi --}}
