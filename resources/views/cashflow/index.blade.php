@@ -71,6 +71,24 @@
             </div>
 
             <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+                <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Pemasukan per Metode Pembayaran</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="p-4 rounded-lg border-l-4 border-violet-500 bg-gray-50 dark:bg-gray-700/40">
+                        <span class="text-xs text-gray-500 uppercase font-semibold">Transfer</span>
+                        <h4 class="text-2xl font-bold text-violet-600 mt-1">Rp {{ number_format($masukTransfer, 0, ',', '.') }}</h4>
+                    </div>
+                    <div class="p-4 rounded-lg border-l-4 border-cyan-500 bg-gray-50 dark:bg-gray-700/40">
+                        <span class="text-xs text-gray-500 uppercase font-semibold">QRIS</span>
+                        <h4 class="text-2xl font-bold text-cyan-600 mt-1">Rp {{ number_format($masukQris, 0, ',', '.') }}</h4>
+                    </div>
+                    <div class="p-4 rounded-lg border-l-4 border-emerald-500 bg-gray-50 dark:bg-gray-700/40">
+                        <span class="text-xs text-gray-500 uppercase font-semibold">Tunai</span>
+                        <h4 class="text-2xl font-bold text-emerald-600 mt-1">Rp {{ number_format($masukTunai, 0, ',', '.') }}</h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100">Riwayat Cashflow</h3>
                     <p class="text-xs text-gray-500">Transaksi dari pembayaran disinkronkan otomatis dan tidak dapat diedit/dihapus dari sini.</p>

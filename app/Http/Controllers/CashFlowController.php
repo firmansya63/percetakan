@@ -47,6 +47,11 @@ class CashFlowController extends Controller implements HasMiddleware
         $totalKeluar = (clone $query)->where('tipe', 'keluar')->sum('jumlah');
         $saldo = $totalMasuk - $totalKeluar;
 
+        // Ringkasan pemasukan per metode pembayaran (hanya uang masuk).
+        $masukTransfer = (clone $query)->where('tipe', 'masuk')->where('metode_pembayaran', 'transfer')->sum('jumlah');
+        $masukQris = (clone $query)->where('tipe', 'masuk')->where('metode_pembayaran', 'qris')->sum('jumlah');
+        $masukTunai = (clone $query)->where('tipe', 'masuk')->where('metode_pembayaran', 'tunai')->sum('jumlah');
+
         $kategoriOptions = CashFlow::query()
             ->select('kategori')
             ->distinct()
@@ -58,6 +63,9 @@ class CashFlowController extends Controller implements HasMiddleware
             'totalMasuk',
             'totalKeluar',
             'saldo',
+            'masukTransfer',
+            'masukQris',
+            'masukTunai',
             'startDate',
             'endDate',
             'tipe',
