@@ -243,15 +243,15 @@ class LaporanGlobalService
         $mulai = $this->start->copy();
         $selesai = $this->end->copy();
 
-        // Bangun kerangka tanggal lengkap.
-        $dates = collect();
+        // Bangun kerangka tanggal lengkap (array biasa agar bisa diubah in-place).
+        $dates = [];
         for ($d = $mulai->copy(); $d->lte($selesai); $d->addDay()) {
-            $dates->put($d->format('Y-m-d'), [
+            $dates[$d->format('Y-m-d')] = [
                 'tanggal' => $d->format('Y-m-d'),
                 'label' => $d->format('d M'),
                 'masuk' => 0.0,
                 'keluar' => 0.0,
-            ]);
+            ];
         }
 
         $masuk = Pembayaran::whereBetween('created_at', [$this->start, $this->end])
@@ -266,17 +266,17 @@ class LaporanGlobalService
             ->pluck('total', 'tgl');
 
         foreach ($masuk as $tgl => $total) {
-            if ($dates->has($tgl)) {
+            if (array_key_exists($tgl, $dates)) {
                 $dates[$tgl]['masuk'] = (float) $total;
             }
         }
         foreach ($keluar as $tgl => $total) {
-            if ($dates->has($tgl)) {
+            if (array_key_exists($tgl, $dates)) {
                 $dates[$tgl]['keluar'] = (float) $total;
             }
         }
 
-        return $dates->values();
+        return collect(array_values($dates));
     }
 
     /**
