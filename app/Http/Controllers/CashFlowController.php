@@ -58,7 +58,7 @@ class CashFlowController extends Controller implements HasMiddleware
             ->orderBy('kategori')
             ->pluck('kategori');
 
-        // Daftar kategori lengkap untuk datalist form input (gabungan default + yang sudah ada di DB).
+        // Daftar kategori lengkap untuk datalist form input pengeluaran.
         $kategoriList = collect($this->defaultKategoriOptions())
             ->merge($kategoriOptions)
             ->unique()
