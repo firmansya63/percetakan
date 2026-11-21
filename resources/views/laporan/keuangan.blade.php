@@ -1,12 +1,14 @@
 ﻿<x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            Laporan Keuangan & Arus Kas (Owner Only)
+            Cashflow — Laporan Global
         </h2>
     </x-slot>
 
     <div class="py-6 sm:py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+            @include('cashflow._tabs')
+
             <!-- Filter Tanggal -->
             <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
                 <form method="GET" action="{{ route('laporan.keuangan') }}" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">

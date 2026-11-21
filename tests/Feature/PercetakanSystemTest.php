@@ -469,7 +469,7 @@ class PercetakanSystemTest extends TestCase
         $response = $this->actingAs($owner)->get(route('laporan.shift'));
 
         $response->assertStatus(200);
-        $response->assertSeeText('Laporan Keuangan per Shift');
+        $response->assertSeeText('Cashflow — Laporan Shift');
     }
 
     public function test_kasir_cannot_access_laporan_shift(): void

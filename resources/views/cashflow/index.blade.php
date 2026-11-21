@@ -14,6 +14,8 @@
 
     <div class="py-6 sm:py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+            @include('cashflow._tabs')
+
             @if(session('success'))
                 <div class="p-4 bg-green-100 border border-green-300 text-green-700 rounded-lg">{{ session('success') }}</div>
             @endif
