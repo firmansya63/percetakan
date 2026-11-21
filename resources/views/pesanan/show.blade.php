@@ -44,6 +44,19 @@
                     <p><strong>Tanggal Pesan:</strong> {{ $pesanan->tanggal_pesanan->format('d/m/Y') }}</p>
                     <p><strong>Estimasi Selesai:</strong> {{ $pesanan->tanggal_ambil ? $pesanan->tanggal_ambil->format('d/m/Y') : '-' }}</p>
                     <p><strong>Kasir Pembuat:</strong> {{ $pesanan->user->name ?? 'Kasir' }}</p>
+                    <p><strong>Sumber Transaksi:</strong>
+                        @if($pesanan->sumber_transaksi === 'online')
+                            🌐 Online (kirim via email)
+                        @else
+                            🏪 On The Spot (datang langsung)
+                        @endif
+                    </p>
+                    @if($pesanan->sumber_transaksi === 'online')
+                        <p><strong>Email Pengirim:</strong> {{ $pesanan->email_pengirim ?: '-' }}</p>
+                        @if($pesanan->referensi_email)
+                            <p><strong>Ref. Email:</strong> {{ $pesanan->referensi_email }}</p>
+                        @endif
+                    @endif
                 </div>
                 <div class="space-y-1 text-sm md:text-right">
                     <p><strong>Total Tagihan:</strong> Rp {{ number_format($pesanan->total_harga, 0, ',', '.') }}</p>

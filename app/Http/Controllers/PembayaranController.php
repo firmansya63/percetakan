@@ -60,7 +60,7 @@ class PembayaranController extends Controller implements HasMiddleware
 
         $pesanan = Pesanan::findOrFail($request->pesanan_id);
 
-        DB::transaction(function () use ($request, $pesanan) {
+        $pembayaran = DB::transaction(function () use ($request, $pesanan) {
             $sisaSebelum = $pesanan->total_harga - $pesanan->total_dp;
 
             // Hitung kembalian: kelebihan bayar dari sisa tagihan saat ini.
@@ -99,9 +99,11 @@ class PembayaranController extends Controller implements HasMiddleware
                 'pembayaran_id' => $pembayaran->id,
                 'user_id' => $pembayaran->user_id,
             ]);
+
+            return $pembayaran;
         });
 
-        return redirect()->route('pesanan.show', $pesanan)
+        return redirect()->route('pembayaran.receipt', $pembayaran)
             ->with('success', 'Pembayaran berhasil dicatat!');
     }
 

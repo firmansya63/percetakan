@@ -46,6 +46,10 @@ class PesananController extends Controller implements HasMiddleware
             $query->where('status', $request->status);
         }
 
+        if ($request->has('sumber_transaksi') && $request->sumber_transaksi !== '') {
+            $query->where('sumber_transaksi', $request->sumber_transaksi);
+        }
+
         $pesanans = $query->orderBy('created_at', 'desc')->paginate(10);
 
         $statusList = [
@@ -90,6 +94,9 @@ class PesananController extends Controller implements HasMiddleware
             'jasa_potong' => 'nullable|numeric|min:0',
             'dp' => 'nullable|numeric|min:0',
             'metode_pembayaran' => 'nullable|in:tunai,transfer,qris',
+            'sumber_transaksi' => 'required|in:on_the_spot,online',
+            'email_pengirim' => 'nullable|email|max:255',
+            'referensi_email' => 'nullable|string|max:255',
         ]);
 
         DB::beginTransaction();
@@ -112,6 +119,9 @@ class PesananController extends Controller implements HasMiddleware
             $pesanan->tanggal_pesanan = $request->tanggal_pesanan;
             $pesanan->tanggal_ambil = $request->tanggal_ambil;
             $pesanan->catatan = $request->catatan;
+            $pesanan->sumber_transaksi = $request->sumber_transaksi;
+            $pesanan->email_pengirim = $request->email_pengirim;
+            $pesanan->referensi_email = $request->referensi_email;
             $pesanan->status = 'menunggu_desain';
             $pesanan->save();
 

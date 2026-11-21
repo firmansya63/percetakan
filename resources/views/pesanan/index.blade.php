@@ -49,7 +49,7 @@
                 </div>
 
                 {{-- Status Filter --}}
-                <div class="lg:col-span-4">
+                <div class="lg:col-span-3">
                     <select 
                         name="status" 
                         class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 text-sm text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
@@ -63,6 +63,18 @@
                     </select>
                 </div>
 
+                {{-- Sumber Transaksi Filter --}}
+                <div class="lg:col-span-3">
+                    <select 
+                        name="sumber_transaksi" 
+                        class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 text-sm text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
+                    >
+                        <option value="">Semua Sumber Transaksi</option>
+                        <option value="on_the_spot" {{ request('sumber_transaksi') === 'on_the_spot' ? 'selected' : '' }}>On The Spot</option>
+                        <option value="online" {{ request('sumber_transaksi') === 'online' ? 'selected' : '' }}>Online</option>
+                    </select>
+                </div>
+
                 {{-- Action Buttons --}}
                 <div class="lg:col-span-2 flex items-center gap-2">
                     <button 
@@ -71,7 +83,7 @@
                     >
                         Filter
                     </button>
-                    @if(request()->hasAny(['search', 'status']))
+                    @if(request()->hasAny(['search', 'status', 'sumber_transaksi']))
                         <a 
                             href="{{ route('pesanan.index') }}" 
                             class="p-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition" 
@@ -94,6 +106,7 @@
                         <tr class="bg-gray-50/80 dark:bg-gray-700/40 border-b border-gray-100 dark:border-gray-700/60 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                             <th class="py-4 px-5">Nota & Pelanggan</th>
                             <th class="py-4 px-5">Tanggal</th>
+                            <th class="py-4 px-5">Sumber</th>
                             <th class="py-4 px-5">Status Produksi</th>
                             <th class="py-4 px-5">Pembayaran</th>
                             <th class="py-4 px-5 text-right">Total Biaya</th>
@@ -153,6 +166,19 @@
                                         <div class="text-[11px] text-gray-400 dark:text-gray-500">
                                             Ambil: {{ $pesanan->tanggal_ambil->format('d M Y') }}
                                         </div>
+                                    @endif
+                                </td>
+
+                                {{-- Sumber Transaksi --}}
+                                <td class="py-4 px-5 whitespace-nowrap">
+                                    @if($pesanan->sumber_transaksi === 'online')
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold border bg-sky-50 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300 border-sky-200 dark:border-sky-800">
+                                            🌐 Online
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold border bg-orange-50 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 border-orange-200 dark:border-orange-800">
+                                            🏪 On The Spot
+                                        </span>
                                     @endif
                                 </td>
 
@@ -232,7 +258,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="py-12 px-5 text-center">
+                                <td colspan="7" class="py-12 px-5 text-center">
                                     <div class="w-14 h-14 rounded-2xl bg-gray-100 dark:bg-gray-700/50 text-gray-400 mx-auto flex items-center justify-center mb-3">
                                         <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
@@ -240,13 +266,13 @@
                                     </div>
                                     <h4 class="text-base font-bold text-gray-800 dark:text-gray-200">Tidak ada pesanan ditemukan</h4>
                                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-sm mx-auto">
-                                        @if(request()->hasAny(['search', 'status']))
+                                        @if(request()->hasAny(['search', 'status', 'sumber_transaksi']))
                                             Coba sesuaikan kata kunci pencarian atau ubah filter status yang dipilih.
                                         @else
                                             Belum ada data pesanan yang tercatat. Buat pesanan baru untuk mulai transaksi.
                                         @endif
                                     </p>
-                                    @if(request()->hasAny(['search', 'status']))
+                                    @if(request()->hasAny(['search', 'status', 'sumber_transaksi']))
                                         <a href="{{ route('pesanan.index') }}" class="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:underline mt-3">
                                             Reset Filter
                                         </a>

@@ -21,6 +21,9 @@ class Pesanan extends Model
         'total_dp',
         'sisa_bayar',
         'status_pembayaran',
+        'sumber_transaksi',
+        'email_pengirim',
+        'referensi_email',
     ];
 
     protected function casts(): array

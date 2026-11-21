@@ -26,6 +26,16 @@
                                 <p class="font-bold">Tanggal:</p>
                                 <p>{{ $pesanan->tanggal_pesanan->format('d-m-Y') }}</p>
                             </div>
+                            <div>
+                                <p class="font-bold">Sumber Transaksi:</p>
+                                <p>{{ $pesanan->sumber_transaksi === 'online' ? 'Online (via email)' : 'On The Spot' }}</p>
+                                @if($pesanan->sumber_transaksi === 'online' && $pesanan->email_pengirim)
+                                    <p class="text-xs mt-1">Email: {{ $pesanan->email_pengirim }}</p>
+                                @endif
+                                @if($pesanan->sumber_transaksi === 'online' && $pesanan->referensi_email)
+                                    <p class="text-xs">Ref: {{ $pesanan->referensi_email }}</p>
+                                @endif
+                            </div>
                         </div>
 
                         <table class="w-full border-collapse border mb-6">

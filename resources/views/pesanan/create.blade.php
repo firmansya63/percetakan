@@ -57,6 +57,54 @@
                     </div>
                 </div>
 
+                {{-- Sumber Transaksi --}}
+                <div class="mb-5 p-4 rounded-xl bg-gray-50/70 dark:bg-gray-750 border border-gray-100 dark:border-gray-700/60">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-2">
+                        Sumber Transaksi <span class="text-rose-500">*</span>
+                    </label>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <label class="flex-1 inline-flex items-start gap-3 p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 cursor-pointer hover:border-blue-400 dark:hover:border-blue-500 transition">
+                            <input type="radio" name="sumber_transaksi" value="on_the_spot" {{ old('sumber_transaksi', 'on_the_spot') === 'on_the_spot' ? 'checked' : '' }} class="mt-0.5 rounded-full border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span class="text-sm">
+                                <span class="font-bold text-gray-800 dark:text-gray-200 flex items-center gap-1.5">
+                                    🏪 On The Spot
+                                </span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400 block mt-0.5">Customer datang langsung ke tempat percetakan</span>
+                            </span>
+                        </label>
+                        <label class="flex-1 inline-flex items-start gap-3 p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 cursor-pointer hover:border-blue-400 dark:hover:border-blue-500 transition">
+                            <input type="radio" name="sumber_transaksi" value="online" {{ old('sumber_transaksi') === 'online' ? 'checked' : '' }} class="mt-0.5 rounded-full border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span class="text-sm">
+                                <span class="font-bold text-gray-800 dark:text-gray-200 flex items-center gap-1.5">
+                                    🌐 Online
+                                </span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400 block mt-0.5">Customer kirim file / pesan via email</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                {{-- Detail Transaksi Online --}}
+                <div id="onlineDetailBlock" class="mb-5 p-4 rounded-xl bg-sky-50/60 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-800/60 hidden">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-sky-700 dark:text-sky-300 mb-2">
+                        📧 Detail Pengirim Email
+                    </label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-1.5">
+                                Email Pengirim
+                            </label>
+                            <input type="email" name="email_pengirim" id="inputEmailPengirim" value="{{ old('email_pengirim') }}" placeholder="contoh@email.com" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 text-sm text-gray-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-1.5">
+                                Subjek / No. Referensi Email
+                            </label>
+                            <input type="text" name="referensi_email" value="{{ old('referensi_email') }}" placeholder="Contoh: Re: Pesanan Banner - INV202611170001" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 text-sm text-gray-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                        </div>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
                     {{-- Pilih Pelanggan --}}
                     <div>
@@ -499,5 +547,24 @@
 
         // Add first item on load
         addNewItem();
+
+        // Toggle detail transaksi online berdasarkan pilihan sumber transaksi
+        const sumberRadios = document.querySelectorAll('input[name="sumber_transaksi"]');
+        const onlineDetailBlock = document.getElementById('onlineDetailBlock');
+
+        function toggleOnlineDetail() {
+            const selected = document.querySelector('input[name="sumber_transaksi"]:checked');
+            if (selected && selected.value === 'online') {
+                onlineDetailBlock.classList.remove('hidden');
+            } else {
+                onlineDetailBlock.classList.add('hidden');
+            }
+        }
+
+        sumberRadios.forEach(radio => {
+            radio.addEventListener('change', toggleOnlineDetail);
+        });
+
+        toggleOnlineDetail();
     </script>
 </x-app-layout>
