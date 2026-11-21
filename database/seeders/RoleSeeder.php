@@ -43,6 +43,8 @@ class RoleSeeder extends Seeder
             // Laporan
             'view_laporan_omzet',
             'view_laporan_keuangan',
+            'view_laporan_global',
+            'view_setoran_harian',
 
             // Produksi
             'view_produksi',
@@ -74,6 +76,7 @@ class RoleSeeder extends Seeder
             'create_pembayaran',
             'view_harga',
             'view_produksi',
+            'view_setoran_harian',
         ]);
         // CANNOT: view_bahan (master), view_laporan_omzet, view_laporan_keuangan
 

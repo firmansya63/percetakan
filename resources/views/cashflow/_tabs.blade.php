@@ -7,8 +7,8 @@
         ],
         'global' => [
             'label' => 'Laporan Global',
-            'route' => 'laporan.keuangan',
-            'active' => request()->routeIs('laporan.keuangan'),
+            'route' => 'laporan.global',
+            'active' => request()->routeIs('laporan.global', 'laporan.keuangan'),
         ],
         'shift' => [
             'label' => 'Laporan Shift',

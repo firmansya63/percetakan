@@ -6,6 +6,7 @@ use App\Http\Controllers\CompanyProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FinishingController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\LaporanGlobalController;
 use App\Http\Controllers\PelangganController;
 use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\PesananController;
@@ -67,6 +68,13 @@ Route::middleware('auth')->group(function () {
     Route::get('laporan/keuangan', [LaporanController::class, 'keuangan'])->name('laporan.keuangan');
     Route::get('laporan/pesanan', [LaporanController::class, 'pesanan'])->name('laporan.pesanan');
     Route::get('laporan/shift', [ShiftReportController::class, 'index'])->name('laporan.shift');
+
+    // Laporan Global (Konsolidasi) — Owner
+    Route::get('laporan/global', [LaporanGlobalController::class, 'index'])->name('laporan.global');
+    Route::get('laporan/global/export', [LaporanGlobalController::class, 'exportCsv'])->name('laporan.global.export');
+
+    // Setoran Harian — Kasir
+    Route::get('laporan/setoran', [LaporanGlobalController::class, 'setoran'])->name('laporan.setoran');
 
     // Cashflow / Keuangan
     Route::resource('cashflow', CashFlowController::class);
