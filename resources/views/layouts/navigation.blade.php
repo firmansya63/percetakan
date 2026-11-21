@@ -9,10 +9,10 @@
 <aside
     :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
     @keydown.escape.window="sidebarOpen = false"
-    class="fixed inset-y-0 left-0 w-72 bg-white dark:bg-gray-800 border-r border-gray-200/80 dark:border-gray-700 z-50 flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0"
+    class="fixed inset-y-0 left-0 w-64 bg-white dark:bg-gray-800 border-r border-gray-200/80 dark:border-gray-700 z-50 flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0"
 >
     {{-- Logo --}}
-    <div class="flex items-center justify-between h-16 px-5 border-b border-gray-200/80 dark:border-gray-700 shrink-0">
+    <div class="flex items-center justify-between h-16 px-4 border-b border-gray-200/80 dark:border-gray-700 shrink-0">
         <a href="{{ route('dashboard') }}" class="flex items-center gap-3 min-w-0">
             @if(!empty($companyProfile?->logo))
                 <div class="w-10 h-10 rounded-xl bg-white dark:bg-gray-700 border border-gray-100 dark:border-gray-600 p-1 flex items-center justify-center shadow-sm shrink-0 overflow-hidden">
@@ -35,7 +35,7 @@
     </div>
 
     {{-- Navigation --}}
-    <nav class="flex-1 overflow-y-auto px-4 py-5 space-y-1">
+    <nav class="flex-1 overflow-y-auto px-3 py-5 space-y-1">
 
         {{-- Dashboard --}}
         <a href="{{ route('dashboard') }}" @click="sidebarOpen = false" class="{{ $linkBase }} {{ request()->routeIs('dashboard') ? $linkActive : $linkInactive }}">

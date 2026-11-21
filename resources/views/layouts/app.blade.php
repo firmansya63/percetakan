@@ -54,7 +54,7 @@
                     display: none !important;
                 }
                 /* Hilangkan margin kiri yang dipakai untuk sidebar */
-                .lg\:ml-72 {
+                .lg\:ml-64 {
                     margin-left: 0 !important;
                 }
                 /* Konten utama selebar kertas */
@@ -89,7 +89,7 @@
             @include('layouts.navigation')
 
             {{-- Main Content --}}
-            <div class="flex-1 flex flex-col min-w-0 lg:ml-72">
+            <div class="flex-1 flex flex-col min-w-0 lg:ml-64">
 
                 {{-- Top Bar --}}
                 <header class="sticky top-0 z-30 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
