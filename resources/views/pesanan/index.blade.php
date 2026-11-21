@@ -44,7 +44,16 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">Rp {{ number_format($pesanan->total_harga) }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <a href="{{ route('pesanan.show', $pesanan) }}" class="text-blue-600 hover:text-blue-900">Lihat</a>
+                                    <a href="{{ route('pesanan.show', $pesanan) }}" class="text-blue-600 hover:text-blue-900 mr-2">Lihat</a>
+                                    @can('edit_pesanan')
+                                    <a href="{{ route('pesanan.edit', $pesanan) }}" class="text-green-600 hover:text-green-900 mr-2">Edit</a>
+                                    @endcan
+                                    @can('delete_pesanan')
+                                    <form action="{{ route('pesanan.destroy', $pesanan) }}" method="POST" class="inline">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Yakin hapus pesanan ini?')">Hapus</button>
+                                    </form>
+                                    @endcan
                                 </td>
                             </tr>
                             @endforeach
