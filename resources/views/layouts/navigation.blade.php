@@ -146,6 +146,15 @@
                 </svg>
                 <span>Setoran Harian</span>
             </a>
+
+            @can('create_cashflow')
+            <a href="{{ route('cashflow.pengeluaran') }}" @click="sidebarOpen = false" class="{{ $linkBase }} {{ request()->routeIs('cashflow.pengeluaran') ? $linkActive : $linkInactive }}">
+                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+                <span>Input Pengeluaran</span>
+            </a>
+            @endcan
         </div>
         @endcan
 

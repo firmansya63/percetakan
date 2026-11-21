@@ -17,7 +17,7 @@ class CashFlowController extends Controller implements HasMiddleware
     {
         return [
             new Middleware('permission:view_cashflow', only: ['index', 'show']),
-            new Middleware('permission:create_cashflow', only: ['create', 'store']),
+            new Middleware('permission:create_cashflow', only: ['create', 'store', 'pengeluaran']),
             new Middleware('permission:edit_cashflow', only: ['edit', 'update']),
             new Middleware('permission:delete_cashflow', only: ['destroy']),
         ];
@@ -89,6 +89,28 @@ class CashFlowController extends Controller implements HasMiddleware
         ]);
     }
 
+    /**
+     * Form input pengeluaran khusus (dapat diakses Kasir & Owner).
+     */
+    public function pengeluaran(): View
+    {
+        $kategoriOptions = CashFlow::query()
+            ->select('kategori')
+            ->distinct()
+            ->orderBy('kategori')
+            ->pluck('kategori');
+
+        $kategoriList = collect($this->defaultKategoriOptions())
+            ->merge($kategoriOptions)
+            ->unique()
+            ->sort()
+            ->values();
+
+        return view('cashflow.pengeluaran', [
+            'kategoriList' => $kategoriList,
+        ]);
+    }
+
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
@@ -104,8 +126,13 @@ class CashFlowController extends Controller implements HasMiddleware
 
         CashFlow::create($validated);
 
-        return redirect()->route('cashflow.index')
-            ->with('success', 'Transaksi cashflow berhasil ditambahkan.');
+        // Kasir hanya punya akses form pengeluaran, bukan halaman riwayat cashflow.
+        $redirectRoute = Auth::user()->can('view_cashflow')
+            ? 'cashflow.index'
+            : 'cashflow.pengeluaran';
+
+        return redirect()->route($redirectRoute)
+            ->with('success', 'Pengeluaran berhasil dicatat.');
     }
 
     public function show(CashFlow $cashflow): RedirectResponse

@@ -77,6 +77,7 @@ Route::middleware('auth')->group(function () {
     Route::get('laporan/setoran', [LaporanGlobalController::class, 'setoran'])->name('laporan.setoran');
 
     // Cashflow / Keuangan
+    Route::get('cashflow/pengeluaran', [CashFlowController::class, 'pengeluaran'])->name('cashflow.pengeluaran');
     Route::resource('cashflow', CashFlowController::class);
 
     // User Management

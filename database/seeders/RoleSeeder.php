@@ -77,8 +77,9 @@ class RoleSeeder extends Seeder
             'view_harga',
             'view_produksi',
             'view_setoran_harian',
+            'create_cashflow', // Input pengeluaran (kas kecil)
         ]);
-        // CANNOT: view_bahan (master), view_laporan_omzet, view_laporan_keuangan
+        // CANNOT: view_bahan (master), view_laporan_omzet, view_laporan_keuangan, view_cashflow
 
         // 3. Operator Produksi
         $operatorRole = Role::findOrCreate('operator');
