@@ -5,9 +5,18 @@
                 Cashflow / Arus Kas
             </h2>
             @can('create_cashflow')
-                <a href="{{ route('cashflow.create') }}" class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium">
-                    Tambah Transaksi
-                </a>
+                <div class="flex items-center gap-2">
+                    <button type="button" x-data x-on:click="$dispatch('open-modal', 'input-pengeluaran')"
+                        class="inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm font-medium">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                        Input Pengeluaran
+                    </button>
+                    <a href="{{ route('cashflow.create') }}" class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium">
+                        Tambah Transaksi
+                    </a>
+                </div>
             @endcan
         </div>
     </x-slot>
@@ -164,4 +173,80 @@
             </div>
         </div>
     </div>
+
+    {{-- Modal Input Pengeluaran --}}
+    @can('create_cashflow')
+    <x-modal name="input-pengeluaran" :show="$errors->any()" maxWidth="lg">
+        <form method="POST" action="{{ route('cashflow.store') }}" class="p-6 space-y-4">
+            @csrf
+            <input type="hidden" name="tipe" value="keluar">
+
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100">Input Pengeluaran</h3>
+                <button type="button" x-on:click="$dispatch('close-modal', 'input-pengeluaran')" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            @if($errors->any())
+                <div class="p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+                    <ul class="list-disc list-inside space-y-1">
+                        @foreach($errors->all() as $err)
+                            <li>{{ $err }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label for="modal-tanggal" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal</label>
+                    <input id="modal-tanggal" name="tanggal" type="date" value="{{ old('tanggal', now()->format('Y-m-d')) }}" required
+                        class="mt-1 w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 shadow-sm">
+                </div>
+                <div>
+                    <label for="modal-kategori" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Kategori</label>
+                    <input id="modal-kategori" name="kategori" type="text" list="modal-kategori-options" value="{{ old('kategori') }}" required maxlength="100"
+                        placeholder="Contoh: Pembelian Bahan, Gaji, Operasional"
+                        class="mt-1 w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 shadow-sm">
+                    <datalist id="modal-kategori-options">
+                        @foreach($kategoriList as $opt)
+                            <option value="{{ $opt }}"></option>
+                        @endforeach
+                    </datalist>
+                </div>
+                <div>
+                    <label for="modal-jumlah" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Jumlah (Rp)</label>
+                    <input id="modal-jumlah" name="jumlah" type="number" step="0.01" min="0.01" value="{{ old('jumlah') }}" required placeholder="0"
+                        class="mt-1 w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 shadow-sm">
+                </div>
+                <div>
+                    <label for="modal-metode" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Metode Pembayaran (opsional)</label>
+                    <select id="modal-metode" name="metode_pembayaran" class="mt-1 w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 shadow-sm">
+                        <option value="">-</option>
+                        <option value="tunai">Tunai</option>
+                        <option value="transfer">Transfer</option>
+                        <option value="qris">QRIS</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label for="modal-keterangan" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Keterangan</label>
+                <textarea id="modal-keterangan" name="keterangan" rows="3" maxlength="1000" placeholder="Contoh: Beli tinta printer, bayar listrik..."
+                    class="mt-1 w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 shadow-sm">{{ old('keterangan') }}</textarea>
+            </div>
+
+            <div class="flex items-center justify-end gap-3 pt-2">
+                <button type="button" x-on:click="$dispatch('close-modal', 'input-pengeluaran')"
+                    class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-md text-sm font-medium">Batal</button>
+                <button type="submit" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md text-sm font-semibold">
+                    Simpan Pengeluaran
+                </button>
+            </div>
+        </form>
+    </x-modal>
+    @endcan
 </x-app-layout>

@@ -58,6 +58,13 @@ class CashFlowController extends Controller implements HasMiddleware
             ->orderBy('kategori')
             ->pluck('kategori');
 
+        // Daftar kategori lengkap untuk datalist form input (gabungan default + yang sudah ada di DB).
+        $kategoriList = collect($this->defaultKategoriOptions())
+            ->merge($kategoriOptions)
+            ->unique()
+            ->sort()
+            ->values();
+
         return view('cashflow.index', compact(
             'cashFlows',
             'totalMasuk',
@@ -70,7 +77,8 @@ class CashFlowController extends Controller implements HasMiddleware
             'endDate',
             'tipe',
             'kategori',
-            'kategoriOptions'
+            'kategoriOptions',
+            'kategoriList'
         ));
     }
 
