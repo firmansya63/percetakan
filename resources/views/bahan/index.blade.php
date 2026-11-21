@@ -1,66 +1,167 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Daftar Bahan') }}
-        </h2>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Daftar Bahan Cetak</h1>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Kelola material percetakan, harga jual konsumen, dan stok</p>
+            </div>
+            @can('create_bahan')
+            <a href="{{ route('bahan.create') }}" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-semibold shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-200 shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+                Tambah Bahan
+            </a>
+            @endcan
+        </div>
     </x-slot>
 
-    <div class="py-6 sm:py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
-                <div class="p-4 sm:p-6">
-                    @can('create_bahan')
-                    <a href="{{ route('bahan.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 mb-4">
-                        Tambah Bahan
-                    </a>
-                    @endcan
-                    
-                    @if(session('success'))
-                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-                        {{ session('success') }}
-                    </div>
-                    @endif
+    <div class="space-y-6">
 
-                    <div class="overflow-x-auto -mx-4 sm:mx-0">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Bahan</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Satuan</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Harga Jual</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stok</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            @foreach($bahans as $bahan)
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ $bahan->nama_bahan }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ ucfirst($bahan->jenis_cetakan) }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ $bahan->satuan }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">Rp {{ number_format($bahan->harga_jual, 0, ',', '.') }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ $bahan->stok }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    @can('edit_bahan')
-                                    <a href="{{ route('bahan.edit', $bahan) }}" class="text-blue-600 hover:text-blue-900 mr-2">Edit</a>
-                                    @endcan
-                                    @can('delete_bahan')
-                                    <form action="{{ route('bahan.destroy', $bahan) }}" method="POST" class="inline">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Yakin hapus?')">Hapus</button>
-                                    </form>
-                                    @endcan
+        {{-- Flash Notification --}}
+        @if(session('success'))
+            <div class="flex items-center gap-3 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 shadow-sm">
+                <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                </svg>
+                <span class="text-sm font-medium">{{ session('success') }}</span>
+            </div>
+        @endif
+
+        {{-- Table Card --}}
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700/60 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-50/80 dark:bg-gray-700/40 border-b border-gray-100 dark:border-gray-700/60 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            <th class="py-4 px-5">Nama Bahan</th>
+                            <th class="py-4 px-5">Jenis & Satuan</th>
+                            <th class="py-4 px-5 text-right">Harga Modal</th>
+                            <th class="py-4 px-5 text-right">Harga Jual</th>
+                            <th class="py-4 px-5 text-center">Stok</th>
+                            <th class="py-4 px-5 text-center">Status</th>
+                            <th class="py-4 px-5 text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 dark:divide-gray-700/60 text-sm">
+                        @forelse($bahans as $bahan)
+                            <tr class="hover:bg-gray-50/80 dark:hover:bg-gray-700/30 transition-colors">
+                                
+                                {{-- Nama Bahan --}}
+                                <td class="py-4 px-5">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.429 9.75L2.25 12l4.179 2.25m0-4.5l5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0l4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0l-5.571 3-5.571-3" />
+                                            </svg>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <span class="font-bold text-gray-900 dark:text-gray-100">
+                                                {{ $bahan->nama_bahan }}
+                                            </span>
+                                            @if($bahan->keterangan)
+                                                <p class="text-xs text-gray-400 dark:text-gray-500 truncate max-w-xs mt-0.5">
+                                                    {{ $bahan->keterangan }}
+                                                </p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </td>
+
+                                {{-- Jenis & Satuan --}}
+                                <td class="py-4 px-5 whitespace-nowrap">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 mr-1.5">
+                                        {{ ucfirst($bahan->jenis_cetakan) }}
+                                    </span>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">
+                                        / {{ $bahan->satuan }}
+                                    </span>
+                                </td>
+
+                                {{-- Modal --}}
+                                <td class="py-4 px-5 whitespace-nowrap text-right text-xs text-gray-500 dark:text-gray-400">
+                                    Rp {{ number_format($bahan->harga_dasar, 0, ',', '.') }}
+                                </td>
+
+                                {{-- Harga Jual --}}
+                                <td class="py-4 px-5 whitespace-nowrap text-right font-black text-sm text-emerald-600 dark:text-emerald-400">
+                                    Rp {{ number_format($bahan->harga_jual, 0, ',', '.') }}
+                                </td>
+
+                                {{-- Stok --}}
+                                <td class="py-4 px-5 whitespace-nowrap text-center">
+                                    <span class="font-bold px-2.5 py-1 rounded-lg text-xs {{ $bahan->stok > 0 ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' : 'bg-rose-50 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300' }}">
+                                        {{ $bahan->stok }} {{ $bahan->satuan }}
+                                    </span>
+                                </td>
+
+                                {{-- Status Aktif --}}
+                                <td class="py-4 px-5 whitespace-nowrap text-center">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold {{ $bahan->is_active ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300' }}">
+                                        <span class="w-1.5 h-1.5 rounded-full {{ $bahan->is_active ? 'bg-emerald-500' : 'bg-gray-400' }}"></span>
+                                        {{ $bahan->is_active ? 'Aktif' : 'Non-aktif' }}
+                                    </span>
+                                </td>
+
+                                {{-- Aksi --}}
+                                <td class="py-4 px-5 whitespace-nowrap text-center">
+                                    <div class="inline-flex items-center gap-1">
+                                        @can('edit_bahan')
+                                        <a 
+                                            href="{{ route('bahan.edit', $bahan) }}" 
+                                            class="p-2 rounded-lg text-blue-600 hover:text-blue-800 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
+                                            title="Edit Bahan"
+                                        >
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                                            </svg>
+                                        </a>
+                                        @endcan
+
+                                        @can('delete_bahan')
+                                        <form action="{{ route('bahan.destroy', $bahan) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus bahan {{ $bahan->nama_bahan }}?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button 
+                                                type="submit" 
+                                                class="p-2 rounded-lg text-rose-600 hover:text-rose-800 hover:bg-rose-50 dark:hover:bg-rose-900/30 transition-colors"
+                                                title="Hapus Bahan"
+                                            >
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                        @endcan
+                                    </div>
                                 </td>
                             </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                    </div>
-                    
-                    <div class="mt-4">{{ $bahans->links() }}</div>
-                </div>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="py-12 px-5 text-center">
+                                    <div class="w-14 h-14 rounded-2xl bg-gray-100 dark:bg-gray-700/50 text-gray-400 mx-auto flex items-center justify-center mb-3">
+                                        <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.429 9.75L2.25 12l4.179 2.25m0-4.5l5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0l4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0l-5.571 3-5.571-3" />
+                                        </svg>
+                                    </div>
+                                    <h4 class="text-base font-bold text-gray-800 dark:text-gray-200">Belum ada bahan terdaftar</h4>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-sm mx-auto">
+                                        Tambahkan material atau bahan baku cetak untuk mulai melayani order pelanggan.
+                                    </p>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
+
+            {{-- Pagination --}}
+            @if($bahans->hasPages())
+                <div class="px-5 py-4 border-t border-gray-100 dark:border-gray-700/60 bg-gray-50/50 dark:bg-gray-800">
+                    {{ $bahans->links() }}
+                </div>
+            @endif
         </div>
+
     </div>
 </x-app-layout>
