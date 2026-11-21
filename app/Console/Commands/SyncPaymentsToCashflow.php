@@ -33,7 +33,9 @@ class SyncPaymentsToCashflow extends Command
                 $kategori = $pembayaran->tipe === 'dp' ? 'Pembayaran DP' : 'Pelunasan Pesanan';
                 $keterangan = trim('Sinkron dari pembayaran #' . $pembayaran->id . ' (' . ($pembayaran->pesanan->nomor_nota ?? '-') . ')' . ($pembayaran->catatan ? ' - ' . $pembayaran->catatan : ''));
 
-                CashFlow::create([
+                // Gunakan forceFill agar created_at/updated_at mengikuti waktu transaksi
+                // (bukan now()), sebab kolom tersebut tidak ada di $fillable.
+                CashFlow::forceCreate([
                     'tanggal' => $pembayaran->created_at->toDateString(),
                     'tipe' => 'masuk',
                     'kategori' => $kategori,
