@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bahan;
+use App\Models\CashFlow;
 use App\Models\DetailFinishing;
 use App\Models\DetailPesanan;
 use App\Models\Finishing;
@@ -214,13 +215,30 @@ class PesananController extends Controller implements HasMiddleware
             // Handle DP langsung saat buat pesanan
             if ($request->filled('dp') && $request->dp > 0) {
                 $jumlahDp = min($request->dp, $pesanan->total_harga);
-                Pembayaran::create([
+                $tipeDp = ($jumlahDp >= $pesanan->total_harga) ? 'pelunasan' : 'dp';
+
+                $pembayaranDp = Pembayaran::create([
                     'pesanan_id' => $pesanan->id,
                     'user_id' => Auth::id(),
                     'jumlah' => $jumlahDp,
-                    'tipe' => ($jumlahDp >= $pesanan->total_harga) ? 'pelunasan' : 'dp',
+                    'tipe' => $tipeDp,
                     'metode_pembayaran' => $request->metode_pembayaran ?? 'tunai',
                     'catatan' => 'Uang Muka saat pembuatan pesanan',
+                ]);
+
+                // Sinkronkan ke cashflow agar tercatat di laporan shift & keuangan.
+                $kategoriDp = $tipeDp === 'dp' ? 'Pembayaran DP' : 'Pelunasan Pesanan';
+                $keteranganDp = trim('Sinkron dari pembayaran #' . $pembayaranDp->id . ' (' . ($pesanan->nomor_nota ?? '-') . ')' . ($pembayaranDp->catatan ? ' - ' . $pembayaranDp->catatan : ''));
+
+                CashFlow::create([
+                    'tanggal' => $pembayaranDp->created_at?->toDateString() ?? now()->toDateString(),
+                    'tipe' => 'masuk',
+                    'kategori' => $kategoriDp,
+                    'jumlah' => $pembayaranDp->jumlah,
+                    'metode_pembayaran' => $pembayaranDp->metode_pembayaran,
+                    'keterangan' => $keteranganDp,
+                    'pembayaran_id' => $pembayaranDp->id,
+                    'user_id' => $pembayaranDp->user_id,
                 ]);
 
                 $pesanan->total_dp = $jumlahDp;
@@ -335,7 +353,13 @@ class PesananController extends Controller implements HasMiddleware
             $detailPesanan->save();
 
             $pesanan = $detailPesanan->pesanan()->with('detailPesanans')->first();
-            $allItemsHaveDesign = $pesanan->detailPesanans->every(
+
+            // Hanya item yang membutuhkan desain (bukan jasa design) yang wajib punya file.
+            $itemsButuhDesain = $pesanan->detailPesanans->filter(
+                fn (DetailPesanan $detail) => ! $detail->is_jasa_design,
+            );
+
+            $allItemsHaveDesign = $itemsButuhDesain->isNotEmpty() && $itemsButuhDesain->every(
                 fn (DetailPesanan $detail) => filled($detail->file_desain),
             );
 

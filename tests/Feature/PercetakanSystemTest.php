@@ -581,4 +581,41 @@ class PercetakanSystemTest extends TestCase
         $response->assertSeeText('Rp 190.000'); // Pelunasan
         $response->assertSeeText('Rp 240.000'); // total masuk
     }
+
+    public function test_dp_saat_buat_pesanan_tersinkron_ke_cashflow(): void
+    {
+        $kasir = User::where('email', 'kasir@percetakan.com')->first();
+        $bahanKertas = Bahan::where('jenis_cetakan', 'kertas')->first();
+
+        $response = $this->actingAs($kasir)->post('/pesanan', [
+            'nama_pelanggan_baru' => 'PT DP Sync',
+            'telepon_pelanggan_baru' => '0812000099',
+            'tanggal_pesanan' => now()->format('Y-m-d'),
+            'items' => [
+                [
+                    'bahan_id' => $bahanKertas->id,
+                    'nama_item' => 'Brosur',
+                    'qty' => 100,
+                ],
+            ],
+            'dp' => 50000,
+            'metode_pembayaran' => 'tunai',
+        ]);
+
+        $response->assertRedirect();
+
+        $pesanan = Pesanan::whereHas('pelanggan', function ($q) {
+            $q->where('nama_pelanggan', 'PT DP Sync');
+        })->latest()->first();
+
+        $this->assertNotNull($pesanan);
+
+        // DP harus tersinkron ke cashflow sebagai uang masuk.
+        $this->assertDatabaseHas('cash_flows', [
+            'pembayaran_id' => $pesanan->pembayarans()->where('tipe', 'dp')->first()->id,
+            'tipe' => 'masuk',
+            'kategori' => 'Pembayaran DP',
+            'jumlah' => 50000,
+        ]);
+    }
 }
