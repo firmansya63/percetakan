@@ -1,173 +1,276 @@
 ﻿<x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            Buat Pesanan & Kalkulasi Harga
-        </h2>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Buat Pesanan & Kalkulasi</h1>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Input detail pesanan cetak dan hitung rincian biaya otomatis</p>
+            </div>
+            <a href="{{ route('pesanan.index') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                </svg>
+                Kembali ke Daftar
+            </a>
+        </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
-            @if($errors->any())
-                <div class="mb-6 p-4 bg-red-100 text-red-700 rounded-lg">
-                    <ul class="list-disc list-inside">
-                        @foreach($errors->all() as $err)
-                            <li>{{ $err }}</li>
-                        @endforeach
-                    </ul>
+    <div class="space-y-6 max-w-6xl mx-auto">
+
+        {{-- Alerts --}}
+        @if($errors->any())
+            <div class="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200 shadow-sm">
+                <div class="flex items-center gap-2 mb-2 font-bold text-sm">
+                    <svg class="w-5 h-5 text-rose-600 dark:text-rose-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0110 5zm0 10a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                    </svg>
+                    Mohon periksa kesalahan input berikut:
                 </div>
-            @endif
+                <ul class="list-disc list-inside text-xs space-y-1">
+                    @foreach($errors->all() as $err)
+                        <li>{{ $err }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
-            @if(session('error'))
-                <div class="mb-6 p-4 bg-red-100 text-red-700 rounded-lg">
-                    {{ session('error') }}
+        @if(session('error'))
+            <div class="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200 shadow-sm flex items-center gap-3">
+                <svg class="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+                </svg>
+                <span class="text-sm font-medium">{{ session('error') }}</span>
+            </div>
+        @endif
+
+        <form action="{{ route('pesanan.store') }}" method="POST" id="orderForm" class="space-y-6">
+            @csrf
+
+            {{-- Card 1: Data Pelanggan & Jadwal --}}
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700/60">
+                <div class="flex items-center gap-3 mb-5 pb-4 border-b border-gray-100 dark:border-gray-700/60">
+                    <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-sm shrink-0">
+                        1
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-gray-900 dark:text-white">Informasi Pelanggan & Jadwal</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Pilih pelanggan lama atau input walk-in dan tentukan estimasi selesai</p>
+                    </div>
                 </div>
-            @endif
 
-            <form action="{{ route('pesanan.store') }}" method="POST" id="orderForm" class="space-y-6">
-                @csrf
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+                    {{-- Pilih Pelanggan --}}
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-1.5">
+                            Pilih Pelanggan Terdaftar
+                        </label>
+                        <select name="pelanggan_id" id="pelangganSelect" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 text-sm text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                            <option value="">-- Pelanggan Baru / Walk-in --</option>
+                            @foreach($pelanggans as $p)
+                                <option value="{{ $p->id }}" {{ old('pelanggan_id') == $p->id ? 'selected' : '' }}>
+                                    {{ $p->nama_pelanggan }} ({{ $p->telepon ?? 'Tanpa Telp' }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                <!-- Card 1: Data Pelanggan & Tanggal -->
-                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">1. Informasi Pemesanan & Pelanggan</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {{-- Nama Baru --}}
+                    <div id="newCustomerBlock">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-1.5">
+                            Nama Pelanggan Baru
+                        </label>
+                        <input type="text" name="nama_pelanggan_baru" value="{{ old('nama_pelanggan_baru') }}" placeholder="Contoh: Budi Santoso / PT Maju" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 text-sm text-gray-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                    </div>
+
+                    {{-- Telepon --}}
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-1.5">
+                            No. WhatsApp / Telepon
+                        </label>
+                        <input type="text" name="telepon_pelanggan_baru" value="{{ old('telepon_pelanggan_baru') }}" placeholder="08xxxxxxxxxx" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 text-sm text-gray-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                    </div>
+
+                    {{-- Tanggal Pesan & Ambil --}}
+                    <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-semibold mb-1 text-gray-700 dark:text-gray-300">Pilih Pelanggan Terdaftar:</label>
-                            <select name="pelanggan_id" id="pelangganSelect" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-md">
-                                <option value="">-- Pelanggan Baru / Walk-in --</option>
-                                @foreach($pelanggans as $p)
-                                    <option value="{{ $p->id }}" {{ old('pelanggan_id') == $p->id ? 'selected' : '' }}>{{ $p->nama_pelanggan }} ({{ $p->telepon ?? 'No Telp' }})</option>
-                                @endforeach
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-1.5">
+                                Tanggal Pesanan <span class="text-rose-500">*</span>
+                            </label>
+                            <input type="date" name="tanggal_pesanan" value="{{ old('tanggal_pesanan', date('Y-m-d')) }}" required class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 text-sm text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-1.5">
+                                Estimasi Ambil
+                            </label>
+                            <input type="date" name="tanggal_ambil" value="{{ old('tanggal_ambil', date('Y-m-d', strtotime('+1 day'))) }}" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 text-sm text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Card 2: Items & Dynamic Calculation --}}
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700/60">
+                <div class="flex items-center justify-between gap-4 mb-5 pb-4 border-b border-gray-100 dark:border-gray-700/60">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-sm shrink-0">
+                            2
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-gray-900 dark:text-white">Item Cetakan & Finishing</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Rincian produk cetak, spesifikasi ukuran, dan opsi finishing</p>
+                        </div>
+                    </div>
+                    <button type="button" id="addItemBtn" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-sm shadow-blue-500/20 hover:shadow transition">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                        Tambah Item
+                    </button>
+                </div>
+
+                {{-- Items Container --}}
+                <div id="itemsContainer" class="space-y-4">
+                    {{-- Dynamically injected via JS --}}
+                </div>
+
+                {{-- Jasa Tambahan (Optional) --}}
+                <div class="mt-6 p-5 bg-gradient-to-br from-amber-50/70 to-orange-50/50 dark:from-gray-750 dark:to-gray-700 rounded-2xl border border-amber-200/80 dark:border-gray-600">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="w-6 h-6 rounded-lg bg-amber-500 text-white flex items-center justify-center text-xs font-bold">
+                            +
+                        </span>
+                        <h4 class="text-sm font-bold text-gray-900 dark:text-white">Jasa Tambahan (Opsional)</h4>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        {{-- Jasa Design --}}
+                        <div class="p-3.5 rounded-xl bg-white dark:bg-gray-800 border border-amber-100 dark:border-gray-700 shadow-sm space-y-2">
+                            <label class="inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="jasaDesignCheck" name="jasa_design_enabled" class="jasa-check rounded border-gray-300 text-amber-600 focus:ring-amber-500" {{ old('jasa_design_enabled') ? 'checked' : '' }}>
+                                <span class="ml-2 text-xs font-bold text-gray-800 dark:text-gray-200">Jasa Desain</span>
+                            </label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-xs text-gray-400 font-semibold pointer-events-none">Rp</span>
+                                <input type="number" name="jasa_design" id="inputJasaDesign" value="{{ old('jasa_design', 0) }}" min="0" step="any" placeholder="0" class="jasa-price w-full pl-9 pr-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 text-xs font-semibold text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-amber-500">
+                            </div>
+                        </div>
+
+                        {{-- Jasa Finishing --}}
+                        <div class="p-3.5 rounded-xl bg-white dark:bg-gray-800 border border-amber-100 dark:border-gray-700 shadow-sm space-y-2">
+                            <label class="inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="jasaFinishingCheck" name="jasa_finishing_enabled" class="jasa-check rounded border-gray-300 text-amber-600 focus:ring-amber-500" {{ old('jasa_finishing_enabled') ? 'checked' : '' }}>
+                                <span class="ml-2 text-xs font-bold text-gray-800 dark:text-gray-200">Jasa Pasang / Finishing</span>
+                            </label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-xs text-gray-400 font-semibold pointer-events-none">Rp</span>
+                                <input type="number" name="jasa_finishing" id="inputJasaFinishing" value="{{ old('jasa_finishing', 0) }}" min="0" step="any" placeholder="0" class="jasa-price w-full pl-9 pr-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 text-xs font-semibold text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-amber-500">
+                            </div>
+                        </div>
+
+                        {{-- Jasa Potong --}}
+                        <div class="p-3.5 rounded-xl bg-white dark:bg-gray-800 border border-amber-100 dark:border-gray-700 shadow-sm space-y-2">
+                            <label class="inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="jasaPotongCheck" name="jasa_potong_enabled" class="jasa-check rounded border-gray-300 text-amber-600 focus:ring-amber-500" {{ old('jasa_potong_enabled') ? 'checked' : '' }}>
+                                <span class="ml-2 text-xs font-bold text-gray-800 dark:text-gray-200">Jasa Potong Custom</span>
+                            </label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-xs text-gray-400 font-semibold pointer-events-none">Rp</span>
+                                <input type="number" name="jasa_potong" id="inputJasaPotong" value="{{ old('jasa_potong', 0) }}" min="0" step="any" placeholder="0" class="jasa-price w-full pl-9 pr-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 text-xs font-semibold text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-amber-500">
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-3">Centang dan tentukan biaya untuk jasa tambahan, otomatis masuk ke kalkulasi nota.</p>
+                </div>
+            </div>
+
+            {{-- Card 3: Pembayaran & Rangkuman Tagihan --}}
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700/60">
+                <div class="flex items-center gap-3 mb-5 pb-4 border-b border-gray-100 dark:border-gray-700/60">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-sm shrink-0">
+                        3
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-gray-900 dark:text-white">Pembayaran & Penerbitan Nota</h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Atur uang muka, metode pembayaran, serta catatan instruksi kerja</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    
+                    {{-- Form Pembayaran --}}
+                    <div class="lg:col-span-7 space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-1.5">
+                                Uang Muka / DP (Rp)
+                            </label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-sm font-semibold text-gray-400 pointer-events-none">Rp</span>
+                                <input type="number" name="dp" id="inputDP" value="{{ old('dp', 0) }}" min="0" step="any" placeholder="0" class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 text-sm font-semibold text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                            </div>
+                            <span class="text-[11px] text-gray-400 mt-1 block">Kosongkan/isi 0 jika belum bayar, isi penuh untuk bayar lunas langsung.</span>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-1.5">
+                                Metode Pembayaran
+                            </label>
+                            <select name="metode_pembayaran" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 text-sm text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                                <option value="tunai" {{ old('metode_pembayaran', 'tunai') == 'tunai' ? 'selected' : '' }}>💵 Tunai / Cash</option>
+                                <option value="transfer" {{ old('metode_pembayaran') == 'transfer' ? 'selected' : '' }}>🏦 Transfer Bank</option>
+                                <option value="qris" {{ old('metode_pembayaran') == 'qris' ? 'selected' : '' }}>📱 QRIS</option>
                             </select>
                         </div>
-                        <div id="newCustomerBlock">
-                            <label class="block text-xs font-semibold mb-1 text-gray-700 dark:text-gray-300">Nama Pelanggan Baru:</label>
-                            <input type="text" name="nama_pelanggan_baru" value="{{ old('nama_pelanggan_baru') }}" placeholder="Nama Pelanggan / Perusahaan" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-md">
-                        </div>
+
                         <div>
-                            <label class="block text-xs font-semibold mb-1 text-gray-700 dark:text-gray-300">No. WhatsApp / Telepon:</label>
-                            <input type="text" name="telepon_pelanggan_baru" value="{{ old('telepon_pelanggan_baru') }}" placeholder="08xxxxxxxxxx" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-md">
-                        </div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block text-xs font-semibold mb-1 text-gray-700 dark:text-gray-300">Tanggal Pesanan *:</label>
-                                <input type="date" name="tanggal_pesanan" value="{{ old('tanggal_pesanan', date('Y-m-d')) }}" required class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-md">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold mb-1 text-gray-700 dark:text-gray-300">Estimasi Ambil:</label>
-                                <input type="date" name="tanggal_ambil" value="{{ old('tanggal_ambil', date('Y-m-d', strtotime('+1 day'))) }}" class="w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-md">
-                            </div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-1.5">
+                                Catatan Khusus untuk Operator Produksi
+                            </label>
+                            <textarea name="catatan" rows="3" placeholder="Contoh: Mata ayam tiap 1 meter, warna cerah, potong pas garis..." class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50 text-sm text-gray-800 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">{{ old('catatan') }}</textarea>
                         </div>
                     </div>
-                </div>
 
-                <!-- Card 2: Items & Dynamic Calculation -->
-                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100">2. Item Cetakan & Kalkulasi Otomatis</h3>
-                        <button type="button" id="addItemBtn" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded shadow">
-                            + Tambah Item
-                        </button>
-                    </div>
-
-                    <div id="itemsContainer" class="space-y-6">
-                        <!-- Item row template injected here by JS -->
-                    </div>
-
-                    <!-- Jasa Tambahan (opsional, bisa lebih dari satu) -->
-                    <div class="mt-6 p-4 bg-yellow-50 dark:bg-gray-700 rounded-lg border border-yellow-200 dark:border-gray-600">
-                        <h4 class="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-3">Jasa Tambahan (opsional):</h4>
-
-                        <div class="space-y-3">
-                            <div class="flex flex-wrap items-center gap-3">
-                                <label class="inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="jasaDesignCheck" name="jasa_design_enabled" class="jasa-check rounded border-gray-300 text-yellow-600" {{ old('jasa_design_enabled') ? 'checked' : '' }}>
-                                    <span class="ml-2 text-sm font-semibold text-gray-800 dark:text-gray-200">Jasa Design</span>
-                                </label>
-                                <input type="number" name="jasa_design" id="inputJasaDesign" value="{{ old('jasa_design', 0) }}" min="0" step="any" placeholder="0" class="jasa-price w-full sm:w-48 text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-md">
-                            </div>
-
-                            <div class="flex flex-wrap items-center gap-3">
-                                <label class="inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="jasaFinishingCheck" name="jasa_finishing_enabled" class="jasa-check rounded border-gray-300 text-yellow-600" {{ old('jasa_finishing_enabled') ? 'checked' : '' }}>
-                                    <span class="ml-2 text-sm font-semibold text-gray-800 dark:text-gray-200">Jasa Finishing</span>
-                                </label>
-                                <input type="number" name="jasa_finishing" id="inputJasaFinishing" value="{{ old('jasa_finishing', 0) }}" min="0" step="any" placeholder="0" class="jasa-price w-full sm:w-48 text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-md">
-                            </div>
-
-                            <div class="flex flex-wrap items-center gap-3">
-                                <label class="inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="jasaPotongCheck" name="jasa_potong_enabled" class="jasa-check rounded border-gray-300 text-yellow-600" {{ old('jasa_potong_enabled') ? 'checked' : '' }}>
-                                    <span class="ml-2 text-sm font-semibold text-gray-800 dark:text-gray-200">Jasa Potong</span>
-                                </label>
-                                <input type="number" name="jasa_potong" id="inputJasaPotong" value="{{ old('jasa_potong', 0) }}" min="0" step="any" placeholder="0" class="jasa-price w-full sm:w-48 text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded-md">
-                            </div>
-                        </div>
-
-                        <p class="text-xs text-gray-500 mt-3">Harga diinput manual per jasa, akan muncul sebagai item terpisah di invoice & nota.</p>
-                    </div>
-                </div>
-
-                <!-- Card 3: Pembayaran & Rangkuman Tagihan -->
-                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">3. Pembayaran & Catatan</h3>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-xs font-semibold mb-1">Uang Muka / DP (Rp):</label>
-                                <input type="number" name="dp" id="inputDP" value="{{ old('dp', 0) }}" min="0" step="any" class="w-full text-sm border-gray-300 rounded-md">
-                                <span class="text-xs text-gray-500">Kosongkan jika belum bayar, isi penuh untuk bayar lunas langsung.</span>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold mb-1">Metode Pembayaran:</label>
-                                <select name="metode_pembayaran" class="w-full text-sm border-gray-300 rounded-md">
-                                    <option value="tunai" {{ old('metode_pembayaran', 'tunai') == 'tunai' ? 'selected' : '' }}>Tunai / Cash</option>
-                                    <option value="transfer" {{ old('metode_pembayaran') == 'transfer' ? 'selected' : '' }}>Transfer Bank</option>
-                                    <option value="qris" {{ old('metode_pembayaran') == 'qris' ? 'selected' : '' }}>QRIS</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold mb-1">Catatan Tambahan untuk Produksi:</label>
-                                <textarea name="catatan" rows="2" placeholder="Contoh: Warna cerah, potong pas garis..." class="w-full text-sm border-gray-300 rounded-md">{{ old('catatan') }}</textarea>
-                            </div>
-                        </div>
-
-                        <!-- Summary calculation box -->
-                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg flex flex-col justify-between">
-                            <div class="space-y-3">
+                    {{-- Summary Calculation Box --}}
+                    <div class="lg:col-span-5 bg-gradient-to-br from-gray-50 to-blue-50/30 dark:from-gray-750 dark:to-gray-800 p-6 rounded-2xl border border-gray-200/80 dark:border-gray-700 flex flex-col justify-between">
+                        <div>
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-4">Ringkasan Tagihan</h4>
+                            
+                            <div class="space-y-3.5">
                                 <div class="flex justify-between items-center text-sm">
-                                    <span class="text-gray-600 dark:text-gray-300">Total Tagihan:</span>
-                                    <span class="text-xl font-bold text-gray-900 dark:text-gray-100" id="totalTagihanDisplay">Rp 0</span>
+                                    <span class="text-gray-600 dark:text-gray-400">Total Tagihan:</span>
+                                    <span class="text-2xl font-black text-gray-900 dark:text-white" id="totalTagihanDisplay">Rp 0</span>
                                 </div>
                                 <div class="flex justify-between items-center text-sm">
-                                    <span class="text-gray-600 dark:text-gray-300">Uang Muka (DP):</span>
-                                    <span class="text-base font-semibold text-blue-600" id="dpDisplay">Rp 0</span>
+                                    <span class="text-gray-600 dark:text-gray-400">Uang Muka (DP):</span>
+                                    <span class="text-base font-bold text-blue-600 dark:text-blue-400" id="dpDisplay">Rp 0</span>
                                 </div>
-                                <div class="flex justify-between items-center text-sm border-t pt-2">
+                                <div class="pt-3 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center text-sm">
                                     <span class="font-bold text-gray-800 dark:text-gray-200">Sisa Bayar:</span>
-                                    <span class="text-xl font-extrabold text-red-600" id="sisaBayarDisplay">Rp 0</span>
+                                    <span class="text-2xl font-black text-rose-600 dark:text-rose-400" id="sisaBayarDisplay">Rp 0</span>
                                 </div>
-                                <div class="text-xs text-right font-semibold" id="statusBayarBadge">
-                                    Status: <span class="text-red-500">Belum Lunas</span>
+                                <div class="text-right pt-1" id="statusBayarBadge">
+                                    <span class="inline-block px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300">
+                                        BELUM LUNAS
+                                    </span>
                                 </div>
-                            </div>
-
-                            <div class="pt-4 flex gap-2">
-                                <a href="{{ route('pesanan.index') }}" class="w-1/3 py-2 text-center bg-gray-500 hover:bg-gray-600 text-white font-bold rounded text-sm">
-                                    Batal
-                                </a>
-                                <button type="submit" class="w-2/3 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded text-sm shadow">
-                                    Simpan & Terbitkan Nota
-                                </button>
                             </div>
                         </div>
+
+                        <div class="pt-6 mt-6 border-t border-gray-200 dark:border-gray-700 flex items-center gap-3">
+                            <a href="{{ route('pesanan.index') }}" class="w-1/3 py-3 text-center rounded-xl border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 font-semibold text-sm transition">
+                                Batal
+                            </a>
+                            <button type="submit" class="w-2/3 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-sm shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/35 transition-all duration-200">
+                                Simpan & Cetak Nota
+                            </button>
+                        </div>
                     </div>
+
                 </div>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
 
-    <!-- Client-side calculation script -->
+    {{-- Client-side calculation script --}}
     <script>
         const materials = @json($bahans);
         const finishings = @json($finishings);
@@ -178,7 +281,7 @@
         }
 
         function createItemHtml(idx) {
-            let materialOptions = `<option value="">-- Pilih Bahan --</option>`;
+            let materialOptions = `<option value="">-- Pilih Bahan Cetak --</option>`;
             materials.forEach(m => {
                 materialOptions += `<option value="${m.id}" data-type="${m.jenis_cetakan}" data-price="${m.harga_jual}" data-unit="${m.satuan}">
                     ${m.nama_bahan} - Rp ${Number(m.harga_jual).toLocaleString('id-ID')} / ${m.satuan} (${m.jenis_cetakan})
@@ -188,62 +291,72 @@
             let finishingCheckboxes = '';
             finishings.forEach(f => {
                 finishingCheckboxes += `
-                    <label class="inline-flex items-center text-xs mr-3 mb-1">
-                        <input type="checkbox" name="items[${idx}][finishings][]" value="${f.id}" data-price="${f.harga}" class="item-finishing-check rounded border-gray-300 text-blue-600">
-                        <span class="ml-1 text-gray-700 dark:text-gray-300">${f.nama_finishing} (+Rp ${Number(f.harga).toLocaleString('id-ID')})</span>
+                    <label class="inline-flex items-center text-xs mr-3 mb-1.5 p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-750 cursor-pointer transition">
+                        <input type="checkbox" name="items[${idx}][finishings][]" value="${f.id}" data-price="${f.harga}" class="item-finishing-check rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                        <span class="ml-2 font-medium text-gray-700 dark:text-gray-300">${f.nama_finishing} <span class="text-blue-600 dark:text-blue-400 font-bold">(+Rp ${Number(f.harga).toLocaleString('id-ID')})</span></span>
                     </label>
                 `;
             });
 
             return `
-                <div class="item-card border rounded-lg p-4 bg-gray-50 dark:bg-gray-750 dark:border-gray-700" data-index="${idx}">
-                    <div class="flex justify-between items-center mb-3">
-                        <span class="text-xs font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-800">Item #${idx + 1}</span>
-                        ${idx > 0 ? `<button type="button" class="text-xs text-red-600 hover:underline remove-item-btn">Hapus Item</button>` : ''}
+                <div class="item-card rounded-2xl p-5 bg-gray-50/70 dark:bg-gray-750 border border-gray-200 dark:border-gray-700 space-y-4" data-index="${idx}">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-2">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300">
+                                Item #${idx + 1}
+                            </span>
+                        </div>
+                        ${idx > 0 ? `<button type="button" class="text-xs font-semibold text-rose-600 hover:text-rose-800 hover:underline remove-item-btn flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
+                            Hapus Item
+                        </button>` : ''}
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
                         <div>
-                            <label class="block text-xs font-semibold mb-1">Pilih Bahan *:</label>
-                            <select name="items[${idx}][bahan_id]" class="item-bahan w-full text-xs border-gray-300 rounded-md" required>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-1">Pilih Bahan <span class="text-rose-500">*</span></label>
+                            <select name="items[${idx}][bahan_id]" class="item-bahan w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-xs font-medium text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" required>
                                 ${materialOptions}
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold mb-1">Nama Item / Pekerjaan *:</label>
-                            <input type="text" name="items[${idx}][nama_item]" placeholder="Misal: Spanduk Pecel Lele" class="item-name w-full text-xs border-gray-300 rounded-md" required>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-1">Nama Item / Pekerjaan <span class="text-rose-500">*</span></label>
+                            <input type="text" name="items[${idx}][nama_item]" placeholder="Contoh: Banner Warung 3x1" class="item-name w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-xs text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" required>
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold mb-1">Jumlah (Qty) *:</label>
-                            <input type="number" name="items[${idx}][qty]" value="1" min="1" class="item-qty w-full text-xs border-gray-300 rounded-md" required>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-1">Jumlah (Qty) <span class="text-rose-500">*</span></label>
+                            <input type="number" name="items[${idx}][qty]" value="1" min="1" class="item-qty w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-xs font-bold text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500" required>
                         </div>
                     </div>
 
-                    <!-- Banner Dimension Inputs (Hidden by default, shown if banner) -->
-                    <div class="banner-dimension-block hidden grid-cols-2 gap-3 mb-3 p-3 bg-blue-50 dark:bg-gray-700 rounded border border-blue-200">
+                    {{-- Banner Dimension Block --}}
+                    <div class="banner-dimension-block hidden grid-cols-2 gap-3 p-4 bg-blue-50/70 dark:bg-blue-950/30 rounded-xl border border-blue-200 dark:border-blue-800/60">
                         <div>
-                            <label class="block text-xs font-semibold mb-1 text-blue-900 dark:text-blue-200">Panjang (Meter) *:</label>
-                            <input type="number" step="0.01" min="0.1" name="items[${idx}][panjang]" class="item-panjang w-full text-xs border-gray-300 rounded-md" placeholder="Contoh: 3">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-blue-900 dark:text-blue-200 mb-1">Panjang (Meter) <span class="text-rose-500">*</span></label>
+                            <input type="number" step="0.01" min="0.1" name="items[${idx}][panjang]" class="item-panjang w-full px-3 py-2 rounded-xl border border-blue-200 dark:border-blue-800 bg-white dark:bg-gray-800 text-xs font-bold text-gray-800 dark:text-gray-100" placeholder="Contoh: 3">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold mb-1 text-blue-900 dark:text-blue-200">Lebar (Meter) *:</label>
-                            <input type="number" step="0.01" min="0.1" name="items[${idx}][lebar]" class="item-lebar w-full text-xs border-gray-300 rounded-md" placeholder="Contoh: 1">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-blue-900 dark:text-blue-200 mb-1">Lebar (Meter) <span class="text-rose-500">*</span></label>
+                            <input type="number" step="0.01" min="0.1" name="items[${idx}][lebar]" class="item-lebar w-full px-3 py-2 rounded-xl border border-blue-200 dark:border-blue-800 bg-white dark:bg-gray-800 text-xs font-bold text-gray-800 dark:text-gray-100" placeholder="Contoh: 1">
                         </div>
                     </div>
 
-                    <!-- Finishings options -->
-                    <div class="mb-3">
-                        <label class="block text-xs font-semibold mb-1 text-gray-700 dark:text-gray-300">Pilihan Finishing Tambahan:</label>
+                    {{-- Finishing Options --}}
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-2">Finishing Tambahan</label>
                         <div class="flex flex-wrap">
                             ${finishingCheckboxes}
                         </div>
                     </div>
 
-                    <div class="flex justify-between items-center pt-2 border-t border-gray-200 dark:border-gray-600">
-                        <span class="text-xs text-gray-500">Rumus: <span class="formula-info">Pilih bahan...</span></span>
-                        <div class="text-right">
-                            <span class="text-xs text-gray-500 mr-2">Subtotal Item:</span>
-                            <span class="font-bold text-sm text-green-600 item-subtotal-display">Rp 0</span>
+                    {{-- Subtotal & Formula --}}
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-3 border-t border-gray-200 dark:border-gray-700">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">
+                            Kalkulasi: <span class="formula-info font-medium text-gray-700 dark:text-gray-300">Pilih bahan...</span>
+                        </span>
+                        <div class="flex items-center gap-2 sm:justify-end">
+                            <span class="text-xs text-gray-500">Subtotal Item:</span>
+                            <span class="font-extrabold text-base text-emerald-600 dark:text-emerald-400 item-subtotal-display">Rp 0</span>
                         </div>
                     </div>
                 </div>
@@ -304,10 +417,10 @@
                 grandTotal += calculateItem(card);
             });
 
-            // Tambahkan jasa tambahan (bisa lebih dari satu) jika dicentang
+            // Tambahkan jasa tambahan jika dicentang
             document.querySelectorAll('.jasa-check').forEach(chk => {
                 if (chk.checked) {
-                    const priceInput = chk.closest('.flex').querySelector('.jasa-price');
+                    const priceInput = chk.closest('div').querySelector('.jasa-price');
                     if (priceInput) {
                         grandTotal += parseFloat(priceInput.value) || 0;
                     }
@@ -325,9 +438,9 @@
 
             const statusBadge = document.getElementById('statusBayarBadge');
             if (grandTotal > 0 && sisa <= 0) {
-                statusBadge.innerHTML = 'Status: <span class="text-green-600 font-bold">LUNAS</span>';
+                statusBadge.innerHTML = '<span class="inline-block px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">LUNAS</span>';
             } else {
-                statusBadge.innerHTML = 'Status: <span class="text-red-500 font-bold">BELUM LUNAS</span>';
+                statusBadge.innerHTML = '<span class="inline-block px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300">BELUM LUNAS</span>';
             }
         }
 

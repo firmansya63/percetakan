@@ -69,7 +69,7 @@
                 {{-- Top Bar --}}
                 <header class="sticky top-0 z-30 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
                     <div class="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
-                        <div class="flex items-center gap-4">
+                        <div class="flex items-center gap-3">
                             {{-- Mobile hamburger --}}
                             <button
                                 @click="sidebarOpen = true"
@@ -79,6 +79,14 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                                 </svg>
                             </button>
+
+                            {{-- Mobile Header Brand / Logo --}}
+                            <div class="lg:hidden flex items-center gap-2">
+                                @if(!empty($companyProfile?->logo))
+                                    <img src="{{ asset('storage/' . $companyProfile->logo) }}" alt="{{ $companyProfile->name ?? config('app.name') }}" class="w-8 h-8 rounded-lg object-contain bg-white dark:bg-gray-700 p-0.5 border border-gray-100 dark:border-gray-600">
+                                @endif
+                                <span class="font-bold text-sm text-gray-800 dark:text-gray-100 truncate max-w-[140px] sm:max-w-none">{{ $companyProfile->name ?? config('app.name', 'Percetakan') }}</span>
+                            </div>
 
                             @isset($header)
                                 <div>{{ $header }}</div>
