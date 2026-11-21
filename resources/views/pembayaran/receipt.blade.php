@@ -9,7 +9,7 @@
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
 
             @if(session('success'))
-                <div class="mb-4 p-4 rounded-lg bg-green-100 text-green-700 text-sm font-medium flex items-center gap-2">
+                <div class="mb-4 p-4 rounded-lg bg-green-100 text-green-700 text-sm font-medium flex items-center gap-2 print:hidden">
                     <svg class="w-5 h-5 text-green-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
                     </svg>
@@ -18,7 +18,7 @@
             @endif
 
             <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-sm border">
-                <div class="flex justify-between items-center mb-6">
+                <div class="flex justify-between items-center mb-6 print:hidden">
                     <button onclick="window.print()" class="px-3 py-1 bg-blue-600 text-white text-xs font-bold rounded">Cetak Kwitansi</button>
                     <a href="{{ route('pesanan.show', $pembayaran->pesanan) }}" class="text-xs text-gray-500 hover:underline">&larr; Kembali ke Pesanan</a>
                 </div>

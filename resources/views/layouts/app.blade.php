@@ -42,6 +42,31 @@
                 animation: fadeIn 0.4s ease-out forwards;
             }
         </style>
+
+        <style>
+            @media print {
+                body {
+                    background: #fff !important;
+                }
+                /* Sembunyikan sidebar & top bar agar tidak ikut tercetak */
+                aside,
+                header {
+                    display: none !important;
+                }
+                /* Hilangkan margin kiri yang dipakai untuk sidebar */
+                .lg\:ml-72 {
+                    margin-left: 0 !important;
+                }
+                /* Konten utama selebar kertas */
+                main {
+                    padding: 0 !important;
+                }
+                .min-h-screen {
+                    min-height: 0 !important;
+                }
+                /* Elemen bertanda print:hidden otomatis disembunyikan Tailwind */
+            }
+        </style>
     </head>
     <body class="font-sans antialiased" x-data="{ sidebarOpen: false }">
         <div class="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
